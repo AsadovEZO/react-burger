@@ -1,8 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import styles from './ingredients-item.module.css'; 
+import PropTypes from "prop-types";
+import styles from "./ingredients-item.module.css";
 
-import { CurrencyIcon, Counter } from '@ya.praktikum/react-developer-burger-ui-components';
+import {
+  CurrencyIcon,
+  Counter,
+} from "@ya.praktikum/react-developer-burger-ui-components";
 
 const IngredientItem = ({ ingredient, onAdd, count }) => {
   const { name, price, image } = ingredient;
@@ -16,7 +18,10 @@ const IngredientItem = ({ ingredient, onAdd, count }) => {
         )}
         <img src={image} alt={name} className={styles.image} />
         <p className={`${styles.price} text text_type_digits-default`}>
-          {price} <span className={styles.currencyIcon}><CurrencyIcon type="primary" /></span>
+          {price}{" "}
+          <span className={styles.currencyIcon}>
+            <CurrencyIcon type="primary" />
+          </span>
         </p>
         <p className={`${styles.name} text text_type_main-default`}>{name}</p>
       </button>

@@ -1,14 +1,20 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Button, CurrencyIcon, ConstructorElement, DragIcon } from '@ya.praktikum/react-developer-burger-ui-components';
-import constructorStyles from './burger-constructor.module.css';
+import PropTypes from "prop-types";
+import {
+  Button,
+  CurrencyIcon,
+  ConstructorElement,
+  DragIcon,
+} from "@ya.praktikum/react-developer-burger-ui-components";
+import constructorStyles from "./burger-constructor.module.css";
 
 function BurgerConstructor({ selectedIngredients, onRemove }) {
-  const bun = selectedIngredients.find((item) => item.type === 'bun');
-  const otherIngredients = selectedIngredients.filter((item) => item.type !== 'bun');
+  const bun = selectedIngredients.find((item) => item.type === "bun");
+  const otherIngredients = selectedIngredients.filter(
+    (item) => item.type !== "bun"
+  );
 
   const totalPrice = selectedIngredients.reduce((acc, item) => {
-    const price = item.type === 'bun' ? item.price * 2 : item.price;
+    const price = item.type === "bun" ? item.price * 2 : item.price;
     return acc + price;
   }, 0);
 
@@ -33,7 +39,10 @@ function BurgerConstructor({ selectedIngredients, onRemove }) {
       <section className={constructorStyles.ingredientsList}>
         {otherIngredients.length > 0 ? (
           otherIngredients.map((ingredient, index) => (
-            <div key={ingredient.uniqueId} className={constructorStyles.ingredientItem}>
+            <div
+              key={ingredient.uniqueId}
+              className={constructorStyles.ingredientItem}
+            >
               <DragIcon type="primary" />
               <ConstructorElement
                 text={ingredient.name}
@@ -44,7 +53,12 @@ function BurgerConstructor({ selectedIngredients, onRemove }) {
             </div>
           ))
         ) : (
-          <p className="text text_type_main-medium" style={{ textAlign: 'center' }}>Добавьте ингредиенты</p>
+          <p
+            className="text text_type_main-medium"
+            style={{ textAlign: "center" }}
+          >
+            Добавьте ингредиенты
+          </p>
         )}
       </section>
 

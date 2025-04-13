@@ -2,17 +2,17 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  height: 100%; 
+  height: 100%;
   width: 100%;
   box-sizing: border-box;
   margin-top: 100px;
-  max-height: 90vh; 
+  max-height: 90vh;
   overflow-y: auto;
 }
 
 .bun {
   padding: 0 16px;
-  margin-left: 24px; 
+  margin-left: 24px;
   min-width: 410px;
 }
 
@@ -22,8 +22,8 @@
 }
 
 .ingredientsList {
-  max-height: calc(100% - 300px); 
-  overflow-y: auto; 
+  max-height: calc(100% - 300px);
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 10px;

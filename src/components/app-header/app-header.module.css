@@ -7,14 +7,14 @@
   margin: 0 auto;
 }
 
-.left{
+.left {
   display: flex;
   align-items: flex-end;
-  z-index: 2; 
-  gap: 16px
+  z-index: 2;
+  gap: 16px;
 }
 
-.right{
+.right {
   composes: left;
   align-items: flex-start;
   justify-self: end;
@@ -22,7 +22,7 @@
 
 .center {
   justify-self: center;
-  z-index: 1; 
+  z-index: 1;
 }
 
 .navItem {

@@ -1,49 +1,48 @@
 .card {
-    position: relative; 
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 16px;
-    cursor: pointer;
-  }
-  
-  .image {
-    width: 100%;
-    max-width: 240px;
-    height: auto;
-  }
-  
-  .price {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  
-  .currencyIcon {
-    font-size: 16px;
-  }
-  
-  .name {
-    text-align: center;
-  }
-  
-  .addButton {
-    background: transparent;
-    border: none;
-    margin: 0;
-    cursor: pointer;
-    color: inherit;
-    padding: 0; 
-    width: 100%; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-  }
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  cursor: pointer;
+}
 
-  .counter {
-    position: absolute;
-    top: 8px; 
-    right: 8px; 
-  }
-  
+.image {
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+}
+
+.price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.currencyIcon {
+  font-size: 16px;
+}
+
+.name {
+  text-align: center;
+}
+
+.addButton {
+  background: transparent;
+  border: none;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.counter {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
