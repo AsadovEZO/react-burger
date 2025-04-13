@@ -9,11 +9,17 @@
 
 .itemsGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(2, 1fr);
   gap: 20px;
   margin-top: 20px;
   list-style: none;
   padding-left: 0;
+}
+
+@media (max-width: 768px) {
+  .itemsGrid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .scrollableContainer {

@@ -1,5 +1,5 @@
 import ingredientsStyles from './burger-ingredients.module.css';
-import IngredientsMenu from './ingredients-menu'; 
+import IngredientsMenu from './ingredients-menu/ingredients-menu'; 
 import IngredientItem from './ingredients-item/ingredients-item';
 
 
