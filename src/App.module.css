@@ -2,7 +2,6 @@
   height: 100vh; 
   width: 100%; 
   box-sizing: border-box;
-  max-width: 95%;
   overflow: hidden; 
 }
 .app > header {
@@ -16,6 +15,7 @@
   width: 100%;
   max-width: 90%; 
   margin: 0 auto; 
+  gap: 40px;
 }
 
 .leftBlock {
@@ -23,7 +23,7 @@
   height: 100%; 
   overflow: hidden; 
   box-sizing: border-box;
-  padding-right: 20px;
+  padding: 0px;
 }
 
 .rightBlock {
@@ -31,5 +31,5 @@
   height: 100%; 
   overflow: hidden; 
   box-sizing: border-box;
-  padding-left: 20px;
+  padding: 0px;
 }

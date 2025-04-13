@@ -44,7 +44,7 @@ function BurgerConstructor({ selectedIngredients, onRemove }) {
             </div>
           ))
         ) : (
-          <p className="text text_type_main-medium">Добавьте ингредиенты</p>
+          <p className="text text_type_main-medium" style={{ textAlign: 'center' }}>Добавьте ингредиенты</p>
         )}
       </section>
 
