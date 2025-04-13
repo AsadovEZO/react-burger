@@ -1,6 +1,8 @@
+import PropTypes from "prop-types";
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientItem from "./ingredients-item/ingredients-item";
+import { IngredientType } from "../../utils/types.js";
 
 function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
   const buns = ingredients.filter((item) => item.type === "bun");
@@ -62,5 +64,11 @@ function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
     </div>
   );
 }
+
+BurgerIngredients.propTypes = {
+  ingredients: PropTypes.arrayOf(IngredientType).isRequired,
+  onAdd: PropTypes.func.isRequired,
+  selectedIngredients:  PropTypes.arrayOf(IngredientType),
+};
 
 export default BurgerIngredients;
