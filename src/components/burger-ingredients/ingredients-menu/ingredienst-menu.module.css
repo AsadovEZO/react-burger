@@ -1,0 +1,14 @@
+.menu {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .menu {
+    justify-content: space-around; /* На узких экранах вкладки ближе друг к другу */
+    gap: 8px;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+}

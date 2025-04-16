@@ -1,0 +1,35 @@
+.app {
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.app > header {
+  width: 100%;
+  box-sizing: border-box;
+  max-width: 95%;
+}
+.main {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  max-width: 90%;
+  margin: 0 auto;
+  gap: 40px;
+}
+
+.leftBlock {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0px;
+}
+
+.rightBlock {
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 0px;
+}
