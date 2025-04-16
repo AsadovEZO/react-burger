@@ -31,7 +31,7 @@ const IngredientItem = ({ ingredient, onAdd, count }) => {
 };
 
 IngredientItem.propTypes = {
-  ingredient: PropTypes.arrayOf(IngredientType).isRequired,
+  ingredient: IngredientType.isRequired,
   onAdd: PropTypes.func.isRequired,
   count: PropTypes.number.isRequired,
 };
