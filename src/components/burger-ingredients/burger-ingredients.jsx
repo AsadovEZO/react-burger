@@ -4,7 +4,7 @@ import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientItem from "./ingredients-item/ingredients-item";
 import { IngredientType } from "../../utils/types.js";
 
-function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
+function BurgerIngredients({ ingredients, selectedIngredients }) {
   const buns = ingredients.filter((item) => item.type === "bun");
   const sauces = ingredients.filter((item) => item.type === "sauce");
   const mains = ingredients.filter((item) => item.type === "main");
@@ -28,7 +28,6 @@ function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
               <IngredientItem
                 key={ingredient._id}
                 ingredient={ingredient}
-                onAdd={onAdd}
                 count={getIngredientCount(ingredient)}
               />
             ))}
@@ -41,7 +40,6 @@ function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
               <IngredientItem
                 key={ingredient._id}
                 ingredient={ingredient}
-                onAdd={onAdd}
                 count={getIngredientCount(ingredient)}
               />
             ))}
@@ -54,7 +52,6 @@ function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
               <IngredientItem
                 key={ingredient._id}
                 ingredient={ingredient}
-                onAdd={onAdd}
                 count={getIngredientCount(ingredient)}
               />
             ))}
@@ -67,8 +64,7 @@ function BurgerIngredients({ ingredients, onAdd, selectedIngredients }) {
 
 BurgerIngredients.propTypes = {
   ingredients: PropTypes.arrayOf(IngredientType).isRequired,
-  onAdd: PropTypes.func.isRequired,
-  selectedIngredients:  PropTypes.arrayOf(IngredientType),
+  selectedIngredients: PropTypes.arrayOf(IngredientType),
 };
 
 export default BurgerIngredients;

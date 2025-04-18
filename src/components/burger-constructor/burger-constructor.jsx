@@ -7,8 +7,12 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import constructorStyles from "./burger-constructor.module.css";
 import { IngredientType } from "../../utils/types.js";
+import { useModal } from "../../hooks/show-modal";
+import Modal from "../modal/modal";
+import OrderDetails from "../order-details/order-details";
 
 function BurgerConstructor({ selectedIngredients, onRemove }) {
+  const [isShowingModal, toggleModal] = useModal();
   const bun = selectedIngredients.find((item) => item.type === "bun");
   const otherIngredients = selectedIngredients.filter(
     (item) => item.type !== "bun"
@@ -84,10 +88,21 @@ function BurgerConstructor({ selectedIngredients, onRemove }) {
           <span className="text text_type_digits-medium">{totalPrice}</span>
           <CurrencyIcon type="primary" />
         </section>
-        <Button htmlType="button" type="primary" size="medium">
+        <Button
+          htmlType="button"
+          type="primary"
+          size="medium"
+          onClick={toggleModal}
+        >
           Оформить заказ
         </Button>
       </section>
+      <Modal
+        show={isShowingModal}
+        onCloseButtonClick={toggleModal}
+        content={<OrderDetails />}
+        type="order"
+      />
     </div>
   );
 }

@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.orderNumber {
+  text-shadow: 0 0 16px rgba(51, 51, 255, 0.25), 0 0 8px rgba(51, 51, 255, 0.25),
+    0 4px 32px rgba(51, 51, 255, 0.5);
+  margin: 0;
+  margin-bottom: 32px;
+}
+
+.orderId {
+  margin: 0;
+  margin-bottom: 60px;
+}
+
+.checkmark {
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(
+    circle,
+    rgba(72, 209, 204, 0.2) 0%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 60px;
+}
+
+.status {
+  margin: 0;
+  margin-bottom: 8px;
+}
+
+.instruction {
+  margin: 0;
+  opacity: 0.6;
+}
