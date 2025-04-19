@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { mockBurger } from "../utils/mock-burger";
 
 export const useUserBurger = () => {
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  const [selectedIngredients, setSelectedIngredients] = useState(mockBurger);
 
   // Добавление ингредиентов в бургер
   const handleAdd = (ingredient) => {
