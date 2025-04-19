@@ -22,16 +22,27 @@ function App() {
   const getData = () => {
     setState({ ...state, hasError: false, isLoading: true });
     fetch(url)
-      .then((res) => res.json())
-      .then((data) =>
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(
+          new Error(`Ошибка ${res.status}: ${res.statusText}`)
+        );
+      })
+      .then((data) => {
+        if (!data.success) {
+          throw new Error("Данные с сервера не содержат success: true");
+        }
         setState({
           ...state,
           data: data.data,
           hasError: !data.success,
           isLoading: false,
-        })
-      )
+        });
+      })
       .catch((e) => {
+        console.log("Ошибка при загрузке данных:", e.message);
         setState({ ...state, hasError: true, isLoading: false });
       });
   };
