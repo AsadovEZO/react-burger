@@ -4,7 +4,7 @@ import modalStyles from "./modal.module.css";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import ModalOverlay from "./modal-overlay/modal-overlay";
 
-const Modal = ({ onCloseButtonClick, headerText, content, type }) => {
+const Modal = ({ onCloseButtonClick, headerText, type, children }) => {
   return ReactDOM.createPortal(
     <ModalOverlay onClose={onCloseButtonClick}>
       <section
@@ -20,7 +20,7 @@ const Modal = ({ onCloseButtonClick, headerText, content, type }) => {
           {headerText}
         </p>
 
-        <section>{content}</section>
+        <section>{children}</section>
       </section>
     </ModalOverlay>,
     document.body
@@ -30,8 +30,8 @@ const Modal = ({ onCloseButtonClick, headerText, content, type }) => {
 Modal.propTypes = {
   onCloseButtonClick: PropTypes.func.isRequired,
   headerText: PropTypes.string,
-  content: PropTypes.node.isRequired,
   type: PropTypes.oneOf(["order", "ingredient"]).isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default Modal;

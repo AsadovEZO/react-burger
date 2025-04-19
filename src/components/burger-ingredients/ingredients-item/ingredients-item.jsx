@@ -33,8 +33,8 @@ const IngredientItem = ({ ingredient, count }) => {
         <Modal
           onCloseButtonClick={toggleModal}
           headerText="Детали ингредиента"
-          content={<IngredientDetails ingredient={ingredient} />}
           type="ingredient"
+          children={<IngredientDetails ingredient={ingredient} />}
         />
       )}
     </div>

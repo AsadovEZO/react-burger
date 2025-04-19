@@ -100,8 +100,8 @@ function BurgerConstructor({ selectedIngredients, onRemove }) {
       {isShowingModal && (
         <Modal
           onCloseButtonClick={toggleModal}
-          content={<OrderDetails />}
           type="order"
+          children={<OrderDetails />}
         />
       )}
     </div>
