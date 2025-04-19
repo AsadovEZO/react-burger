@@ -1,17 +1,23 @@
 import PropTypes from "prop-types";
 import styles from "./ingredients-item.module.css";
 import { IngredientType } from "../../../utils/types.js";
-
 import {
   CurrencyIcon,
   Counter,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
-const IngredientItem = ({ ingredient, onAdd, count }) => {
+const IngredientItem = ({ ingredient, count, setModalState }) => {
   const { name, price, image } = ingredient;
+  const handleClick = () => {
+    setModalState({
+      isShowingModal: true,
+      selectedIngredient: ingredient,
+    });
+  };
+
   return (
     <div className={styles.card}>
-      <button className={styles.addButton} onClick={() => onAdd(ingredient)}>
+      <button className={styles.addButton} onClick={handleClick}>
         {count > 0 && (
           <div className={styles.counter}>
             <Counter count={count} size="default" extraClass="m-1" />
@@ -31,9 +37,9 @@ const IngredientItem = ({ ingredient, onAdd, count }) => {
 };
 
 IngredientItem.propTypes = {
-  ingredient: PropTypes.arrayOf(IngredientType).isRequired,
-  onAdd: PropTypes.func.isRequired,
+  ingredient: IngredientType.isRequired,
   count: PropTypes.number.isRequired,
+  setModalState: PropTypes.func.isRequired,
 };
 
 export default IngredientItem;

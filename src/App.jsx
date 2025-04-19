@@ -1,46 +1,68 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import styles from "./App.module.css";
 
-import { data } from "./utils/data";
 import AppHeader from "./components/app-header/app-header";
 import BurgerIngredients from "./components/burger-ingredients/burger-ingredients";
 import BurgerConstructor from "./components/burger-constructor/burger-constructor";
+import { useUserBurger } from "./hooks/use-user-burger";
 
 function App() {
-  const [selectedIngredients, setSelectedIngredients] = useState([]);
+  // Кастомный хук для упрощения кода в App.jsx
+  const { selectedIngredients, handleAdd, handleRemove } = useUserBurger();
 
-  const handleAdd = (ingredient) => {
-    const uniqueId = `${ingredient._id}-${Date.now()}`;
-    const ingredientWithId = { ...ingredient, uniqueId };
+  const [state, setState] = useState({
+    isLoading: false,
+    hasError: false,
+    data: [],
+  });
 
-    if (ingredient.type === "bun") {
-      const currentBun = selectedIngredients.find(
-        (item) => item.type === "bun"
-      );
+  // Получение данных
+  const url = "https://norma.nomoreparties.space/api/ingredients";
 
-      if (currentBun && currentBun._id === ingredient._id) {
-        return;
-      }
-
-      if (currentBun) {
-        const newIngredients = selectedIngredients.filter(
-          (item) => item.type !== "bun"
+  const getData = () => {
+    setState({ ...state, hasError: false, isLoading: true });
+    fetch(url)
+      .then((res) => {
+        if (res.ok) {
+          return res.json();
+        }
+        return Promise.reject(
+          new Error(`Ошибка ${res.status}: ${res.statusText}`)
         );
-        setSelectedIngredients([...newIngredients, ingredientWithId]);
-      } else {
-        setSelectedIngredients([...selectedIngredients, ingredientWithId]);
-      }
-    } else {
-      setSelectedIngredients([...selectedIngredients, ingredientWithId]);
-    }
+      })
+      .then((data) => {
+        if (!data.success) {
+          throw new Error("Данные с сервера не содержат success: true");
+        }
+        setState({
+          ...state,
+          data: data.data,
+          hasError: !data.success,
+          isLoading: false,
+        });
+      })
+      .catch((e) => {
+        console.log("Ошибка при загрузке данных:", e.message);
+        setState({ ...state, hasError: true, isLoading: false });
+      });
   };
 
-  const handleRemove = (ingredientToRemove) => {
-    const newIngredients = selectedIngredients.filter(
-      (item) => item.uniqueId !== ingredientToRemove.uniqueId
+  useEffect(() => {
+    getData();
+  }, []);
+
+  // Если на каком-то этапе возникла ошибка (получили флаг в state.hasError) - возвращаем уведомлеие для пользователей
+  if (state.hasError) {
+    return (
+      <section className={styles.app}>
+        <h1 className="text text_type_main-large">Упс! Куда все подевалось?</h1>
+        <p className="text text_type_main-medium">
+          При загрузке списка ингредиентов произошла ошибка. Пожалуйста,
+          перезагрузите страницу.
+        </p>
+      </section>
     );
-    setSelectedIngredients(newIngredients);
-  };
+  }
 
   return (
     <div className={styles.app}>
@@ -48,7 +70,7 @@ function App() {
       <main className={styles.main}>
         <section className={styles.leftBlock}>
           <BurgerIngredients
-            ingredients={data}
+            ingredients={state.data}
             onAdd={handleAdd}
             selectedIngredients={selectedIngredients}
           />
