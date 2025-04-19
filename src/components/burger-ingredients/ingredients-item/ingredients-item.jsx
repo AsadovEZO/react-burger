@@ -29,13 +29,14 @@ const IngredientItem = ({ ingredient, count }) => {
         </p>
         <p className={`${styles.name} text text_type_main-default`}>{name}</p>
       </button>
-      <Modal
-        show={isShowingModal}
-        onCloseButtonClick={toggleModal}
-        headerText="Детали ингредиента"
-        content={<IngredientDetails ingredient={ingredient} />}
-        type="ingredient"
-      />
+      {isShowingModal && (
+        <Modal
+          onCloseButtonClick={toggleModal}
+          headerText="Детали ингредиента"
+          content={<IngredientDetails ingredient={ingredient} />}
+          type="ingredient"
+        />
+      )}
     </div>
   );
 };

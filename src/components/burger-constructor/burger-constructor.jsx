@@ -97,12 +97,13 @@ function BurgerConstructor({ selectedIngredients, onRemove }) {
           Оформить заказ
         </Button>
       </section>
-      <Modal
-        show={isShowingModal}
-        onCloseButtonClick={toggleModal}
-        content={<OrderDetails />}
-        type="order"
-      />
+      {isShowingModal && (
+        <Modal
+          onCloseButtonClick={toggleModal}
+          content={<OrderDetails />}
+          type="order"
+        />
+      )}
     </div>
   );
 }
