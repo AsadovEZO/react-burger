@@ -1,20 +1,23 @@
 import PropTypes from "prop-types";
 import styles from "./ingredients-item.module.css";
 import { IngredientType } from "../../../utils/types.js";
-import { useModal } from "../../../hooks/show-modal";
-import Modal from "../../modal/modal";
-import IngredientDetails from "../../ingredient-details/ingredient-details";
 import {
   CurrencyIcon,
   Counter,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
-const IngredientItem = ({ ingredient, count }) => {
+const IngredientItem = ({ ingredient, count, setModalState }) => {
   const { name, price, image } = ingredient;
-  const [isShowingModal, toggleModal] = useModal();
+  const handleClick = () => {
+    setModalState({
+      isShowingModal: true,
+      selectedIngredient: ingredient,
+    });
+  };
+
   return (
     <div className={styles.card}>
-      <button className={styles.addButton} onClick={toggleModal}>
+      <button className={styles.addButton} onClick={handleClick}>
         {count > 0 && (
           <div className={styles.counter}>
             <Counter count={count} size="default" extraClass="m-1" />
@@ -29,14 +32,6 @@ const IngredientItem = ({ ingredient, count }) => {
         </p>
         <p className={`${styles.name} text text_type_main-default`}>{name}</p>
       </button>
-      {isShowingModal && (
-        <Modal
-          onCloseButtonClick={toggleModal}
-          headerText="Детали ингредиента"
-          type="ingredient"
-          children={<IngredientDetails ingredient={ingredient} />}
-        />
-      )}
     </div>
   );
 };
@@ -44,6 +39,7 @@ const IngredientItem = ({ ingredient, count }) => {
 IngredientItem.propTypes = {
   ingredient: IngredientType.isRequired,
   count: PropTypes.number.isRequired,
+  setModalState: PropTypes.func.isRequired,
 };
 
 export default IngredientItem;
