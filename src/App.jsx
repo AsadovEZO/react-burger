@@ -1,58 +1,23 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import styles from "./App.module.css";
+import { useDispatch, useSelector } from "react-redux";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
 import AppHeader from "./components/app-header/app-header";
 import BurgerIngredients from "./components/burger-ingredients/burger-ingredients";
 import BurgerConstructor from "./components/burger-constructor/burger-constructor";
-import { useUserBurger } from "./hooks/use-user-burger";
+import { fetchIngredients } from "./services/burger-ingredients-slice";
 
 function App() {
-  // Кастомный хук для упрощения кода в App.jsx
-  const { selectedIngredients, handleAdd, handleRemove } = useUserBurger();
-
-  const [state, setState] = useState({
-    isLoading: false,
-    hasError: false,
-    data: [],
-  });
-
-  // Получение данных
-  const url = "https://norma.nomoreparties.space/api/ingredients";
-
-  const getData = () => {
-    setState({ ...state, hasError: false, isLoading: true });
-    fetch(url)
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-        return Promise.reject(
-          new Error(`Ошибка ${res.status}: ${res.statusText}`)
-        );
-      })
-      .then((data) => {
-        if (!data.success) {
-          throw new Error("Данные с сервера не содержат success: true");
-        }
-        setState({
-          ...state,
-          data: data.data,
-          hasError: !data.success,
-          isLoading: false,
-        });
-      })
-      .catch((e) => {
-        console.log("Ошибка при загрузке данных:", e.message);
-        setState({ ...state, hasError: true, isLoading: false });
-      });
-  };
+  const dispatch = useDispatch();
+  const { hasError } = useSelector((state) => state.burgerIngredients);
 
   useEffect(() => {
-    getData();
-  }, []);
+    dispatch(fetchIngredients());
+  }, [dispatch]);
 
-  // Если на каком-то этапе возникла ошибка (получили флаг в state.hasError) - возвращаем уведомлеие для пользователей
-  if (state.hasError) {
+  if (hasError) {
     return (
       <section className={styles.app}>
         <h1 className="text text_type_main-large">Упс! Куда все подевалось?</h1>
@@ -68,19 +33,14 @@ function App() {
     <div className={styles.app}>
       <AppHeader />
       <main className={styles.main}>
-        <section className={styles.leftBlock}>
-          <BurgerIngredients
-            ingredients={state.data}
-            onAdd={handleAdd}
-            selectedIngredients={selectedIngredients}
-          />
-        </section>
-        <section className={styles.rightBlock}>
-          <BurgerConstructor
-            selectedIngredients={selectedIngredients}
-            onRemove={handleRemove}
-          />
-        </section>
+        <DndProvider backend={HTML5Backend}>
+          <section className={styles.leftBlock}>
+            <BurgerIngredients />
+          </section>
+          <section className={styles.rightBlock}>
+            <BurgerConstructor />
+          </section>
+        </DndProvider>
       </main>
     </div>
   );
