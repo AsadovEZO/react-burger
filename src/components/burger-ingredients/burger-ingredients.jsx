@@ -1,42 +1,88 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
+import Modal from "../modal/modal";
+import { useState, useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import IngredientDetails from "../ingredient-details/ingredient-details";
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientItem from "./ingredients-item/ingredients-item";
-import { IngredientType } from "../../utils/types.js";
-import Modal from "../modal/modal";
-import IngredientDetails from "../ingredient-details/ingredient-details";
+import { hideIngredient } from "../../services/ingredient-details-slice";
 
-function BurgerIngredients({ ingredients, selectedIngredients }) {
-  const buns = ingredients.filter((item) => item.type === "bun");
-  const sauces = ingredients.filter((item) => item.type === "sauce");
-  const mains = ingredients.filter((item) => item.type === "main");
+function BurgerIngredients() {
+  const selectedIngredients = useSelector((state) => state.burgerConstructor);
+  const ingredientDetails = useSelector((state) => state.ingredientDetails);
 
-  const [modalState, setModalState] = useState({
-    isShowingModal: false,
-    selectedIngredient: null,
-  });
+  const { data } = useSelector((state) => state.burgerIngredients);
+  const buns = data.filter((item) => item.type === "bun");
+  const sauces = data.filter((item) => item.type === "sauce");
+  const mains = data.filter((item) => item.type === "main");
+
+  const dispatch = useDispatch();
 
   const closeModal = () => {
-    setModalState({
-      isShowingModal: false,
-      selectedIngredient: null,
-    });
+    dispatch(hideIngredient());
   };
+
+  const [activeTab, setActiveTab] = useState("bun");
+  const containerRef = useRef(null);
+  const bunRef = useRef(null);
+  const sauceRef = useRef(null);
+  const mainRef = useRef(null);
 
   const getIngredientCount = (ingredient) => {
     return selectedIngredients.filter((item) => item._id === ingredient._id)
       .length;
   };
 
+  const scrollToSection = (type) => {
+    setActiveTab(type);
+    if (type === "bun") bunRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (type === "sauce")
+      sauceRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (type === "main")
+      mainRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      const containerTop = container.getBoundingClientRect().top;
+
+      const bunTop = bunRef.current.getBoundingClientRect().top - containerTop;
+      const sauceTop =
+        sauceRef.current.getBoundingClientRect().top - containerTop;
+      const mainTop =
+        mainRef.current.getBoundingClientRect().top - containerTop;
+
+      const distances = [
+        { type: "bun", top: bunTop },
+        { type: "sauce", top: sauceTop },
+        { type: "main", top: mainTop },
+      ];
+
+      const nearest = distances
+        .filter((distance) => distance.top <= 1)
+        .sort((a, b) => b.top - a.top)[0].type;
+      setActiveTab(nearest);
+    };
+
+    container.addEventListener("scroll", handleScroll);
+    return () => container.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <div className={ingredientsStyles.mainBlock}>
       <section className={ingredientsStyles.header}>
         <article className="text text_type_main-large">Соберите бургер</article>
       </section>
-      <IngredientsMenu />
-      <section className={ingredientsStyles.scrollableContainer}>
-        <section>
+      <IngredientsMenu activeTab={activeTab} setActiveTab={scrollToSection} />
+      <section
+        ref={containerRef}
+        className={ingredientsStyles.scrollableContainer}
+      >
+        <section ref={bunRef}>
           <article className="text text_type_main-medium">Булки</article>
           <ul className={ingredientsStyles.itemsGrid}>
             {buns.map((ingredient) => (
@@ -44,12 +90,11 @@ function BurgerIngredients({ ingredients, selectedIngredients }) {
                 key={ingredient._id}
                 ingredient={ingredient}
                 count={getIngredientCount(ingredient)}
-                setModalState={setModalState}
               />
             ))}
           </ul>
         </section>
-        <section>
+        <section ref={sauceRef}>
           <article className="text text_type_main-medium">Соусы</article>
           <ul className={ingredientsStyles.itemsGrid}>
             {sauces.map((ingredient) => (
@@ -57,12 +102,11 @@ function BurgerIngredients({ ingredients, selectedIngredients }) {
                 key={ingredient._id}
                 ingredient={ingredient}
                 count={getIngredientCount(ingredient)}
-                setModalState={setModalState}
               />
             ))}
           </ul>
         </section>
-        <section>
+        <section ref={mainRef}>
           <article className="text text_type_main-medium">Начинки</article>
           <ul className={ingredientsStyles.itemsGrid}>
             {mains.map((ingredient) => (
@@ -70,30 +114,25 @@ function BurgerIngredients({ ingredients, selectedIngredients }) {
                 key={ingredient._id}
                 ingredient={ingredient}
                 count={getIngredientCount(ingredient)}
-                setModalState={setModalState}
               />
             ))}
           </ul>
         </section>
       </section>
 
-      {modalState.isShowingModal && modalState.selectedIngredient && (
-        <Modal
-          show={modalState.isShowingModal}
-          onCloseButtonClick={closeModal}
-          headerText="Детали ингредиента"
-          type="ingredient"
-        >
-          <IngredientDetails ingredient={modalState.selectedIngredient} />
-        </Modal>
-      )}
+      {ingredientDetails.isShowingModal &&
+        ingredientDetails.selectedIngredient && (
+          <Modal
+            show={ingredientDetails.isShowingModal}
+            onCloseButtonClick={closeModal}
+            headerText="Детали ингредиента"
+            type="ingredient"
+          >
+            <IngredientDetails />
+          </Modal>
+        )}
     </div>
   );
 }
-
-BurgerIngredients.propTypes = {
-  ingredients: PropTypes.arrayOf(IngredientType).isRequired,
-  selectedIngredients: PropTypes.arrayOf(IngredientType),
-};
 
 export default BurgerIngredients;

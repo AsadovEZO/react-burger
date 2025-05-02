@@ -1,23 +1,27 @@
-import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
-import React from "react";
+import PropTypes from "prop-types";
 
 import menuStyles from "./ingredienst-menu.module.css";
+import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
 
-const IngredientsMenu = () => {
-  const [current, setCurrent] = React.useState("bun");
+const IngredientsMenu = ({ activeTab, setActiveTab }) => {
   return (
     <div className={`${menuStyles.menu} p-5`}>
-      <Tab value="bun" active={current === "bun"} onClick={setCurrent}>
+      <Tab value="bun" active={activeTab === "bun"} onClick={setActiveTab}>
         Булки
       </Tab>
-      <Tab value="sauce" active={current === "sauce"} onClick={setCurrent}>
+      <Tab value="sauce" active={activeTab === "sauce"} onClick={setActiveTab}>
         Соусы
       </Tab>
-      <Tab value="main" active={current === "main"} onClick={setCurrent}>
+      <Tab value="main" active={activeTab === "main"} onClick={setActiveTab}>
         Начинки
       </Tab>
     </div>
   );
+};
+
+IngredientsMenu.propTypes = {
+  activeTab: PropTypes.oneOf(["bun", "sauce", "main"]),
+  setActiveTab: PropTypes.func.isRequired,
 };
 
 export default IngredientsMenu;
