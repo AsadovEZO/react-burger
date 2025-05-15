@@ -11,7 +11,7 @@ import { fetchIngredients } from "./services/burger-ingredients-slice";
 
 function App() {
   const dispatch = useDispatch();
-  const { hasError } = useSelector((state) => state.burgerIngredients);
+  const hasError = useSelector((state) => state.burgerIngredients.hasError);
 
   useEffect(() => {
     dispatch(fetchIngredients());

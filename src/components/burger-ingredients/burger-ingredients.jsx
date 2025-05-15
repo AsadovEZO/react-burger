@@ -12,7 +12,7 @@ function BurgerIngredients() {
   const selectedIngredients = useSelector((state) => state.burgerConstructor);
   const ingredientDetails = useSelector((state) => state.ingredientDetails);
 
-  const { data } = useSelector((state) => state.burgerIngredients);
+  const data = useSelector((state) => state.burgerIngredients.data);
   const buns = data.filter((item) => item.type === "bun");
   const sauces = data.filter((item) => item.type === "sauce");
   const mains = data.filter((item) => item.type === "main");
