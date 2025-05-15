@@ -36,9 +36,16 @@ export const burgerConstructorSlice = createSlice({
     },
     handleMove: (state, action: PayloadAction<MoveIngredientPayload>) => {
       const {ingredient, toIndex } = action.payload;
+
+      const ingredientIndex = state.findIndex(
+        (item) => item.uniqueId === ingredient.uniqueId
+      );
+      if (ingredientIndex === -1) return;
       
-      const bun = state.find(item => item.type === 'bun')!;
+      const bun = state.find(item => item.type === 'bun') || null!;
       const fillings = state.filter(item => item.type !== 'bun');
+
+      if (fillings.length === 0) return;
       
       const fromIndex = fillings.findIndex(item => item.uniqueId === ingredient.uniqueId);
       if (fromIndex === -1 || fromIndex === toIndex) return;
@@ -46,7 +53,7 @@ export const burgerConstructorSlice = createSlice({
       const [moved] = fillings.splice(fromIndex, 1);
       fillings.splice(toIndex, 0, moved);
 
-      return [bun, ...fillings];
+      return bun ? [bun, ...fillings] : [...fillings];
 
     }, 
     handleRemove: (state, action: PayloadAction<{ uniqueId: string }>) => {

@@ -6,7 +6,7 @@ import styles from "./burger-constructor.module.css";
 import IngredientElement from "./ingredient-element.jsx";
 
 function IngredientsList({ ingredients }) {
-  if (ingredients.length === 0) {
+  if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
     return (
       <p className="text text_type_main-medium" style={{ textAlign: "center" }}>
         Добавьте ингредиенты
@@ -18,7 +18,7 @@ function IngredientsList({ ingredients }) {
     <section className={styles.ingredientsList}>
       {ingredients.map((ingredient, index) => (
         <IngredientElement
-          key={ingredient.uniqueId}
+          key={ingredient.uniqueId || `${ingredient._id}-${index}`}
           ingredient={ingredient}
           newIndex={index}
         />
@@ -28,7 +28,7 @@ function IngredientsList({ ingredients }) {
 }
 
 IngredientsList.propTypes = {
-  ingredients: PropTypes.arrayOf(IngredientType).isRequired,
+  ingredients: PropTypes.arrayOf(IngredientType),
 };
 
 export default IngredientsList;

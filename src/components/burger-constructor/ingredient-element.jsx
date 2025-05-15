@@ -43,6 +43,10 @@ function IngredientElement({ ingredient, newIndex }) {
 
   drag(drop(ref));
 
+  if (!ingredient) {
+    return null;
+  }
+
   return (
     <section className={styles.ingredientsList} style={{ opacity }} ref={ref}>
       <div key={ingredient.uniqueId} className={styles.ingredientItem}>
@@ -59,7 +63,7 @@ function IngredientElement({ ingredient, newIndex }) {
 }
 
 IngredientElement.propTypes = {
-  ingredient: IngredientType.isRequired,
+  ingredient: IngredientType,
   newIndex: PropTypes.number.isRequired,
 };
 

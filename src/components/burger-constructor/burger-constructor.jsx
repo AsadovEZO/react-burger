@@ -40,7 +40,11 @@ function BurgerConstructor() {
   });
 
   const totalPrice = selectedIngredients.reduce((acc, item) => {
-    const price = item.type === "bun" ? item.price * 2 : item.price;
+    const price = item
+      ? item.type === "bun"
+        ? item.price * 2
+        : item.price
+      : 0;
     return acc + price;
   }, 0);
 
