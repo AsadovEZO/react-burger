@@ -1,5 +1,5 @@
 import Modal from "../modal/modal";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import IngredientDetails from "../ingredient-details/ingredient-details";
@@ -13,9 +13,12 @@ function BurgerIngredients() {
   const ingredientDetails = useSelector((state) => state.ingredientDetails);
 
   const data = useSelector((state) => state.burgerIngredients.data);
-  const buns = data.filter((item) => item.type === "bun");
-  const sauces = data.filter((item) => item.type === "sauce");
-  const mains = data.filter((item) => item.type === "main");
+  const { buns, sauces, mains } = useMemo(() => {
+    const buns = data.filter((item) => item.type === "bun");
+    const sauces = data.filter((item) => item.type === "sauce");
+    const mains = data.filter((item) => item.type === "main");
+    return { buns, sauces, mains };
+  }, [data]);
 
   const dispatch = useDispatch();
 
