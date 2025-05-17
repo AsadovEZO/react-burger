@@ -1,11 +1,12 @@
 import Modal from "../modal/modal";
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useRef, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientItem from "./ingredients-item/ingredients-item";
+import useScrollSection from "../../hooks/use-scroll-section";
 import { hideIngredient } from "../../services/ingredient-details-slice";
 
 function BurgerIngredients() {
@@ -26,7 +27,6 @@ function BurgerIngredients() {
     dispatch(hideIngredient());
   };
 
-  const [activeTab, setActiveTab] = useState("bun");
   const containerRef = useRef(null);
   const bunRef = useRef(null);
   const sauceRef = useRef(null);
@@ -37,43 +37,12 @@ function BurgerIngredients() {
       .length;
   };
 
-  const scrollToSection = (type) => {
-    setActiveTab(type);
-    if (type === "bun") bunRef.current?.scrollIntoView({ behavior: "smooth" });
-    if (type === "sauce")
-      sauceRef.current?.scrollIntoView({ behavior: "smooth" });
-    if (type === "main")
-      mainRef.current?.scrollIntoView({ behavior: "smooth" });
-  };
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const handleScroll = () => {
-      const containerTop = container.getBoundingClientRect().top;
-
-      const bunTop = bunRef.current.getBoundingClientRect().top - containerTop;
-      const sauceTop =
-        sauceRef.current.getBoundingClientRect().top - containerTop;
-      const mainTop =
-        mainRef.current.getBoundingClientRect().top - containerTop;
-
-      const distances = [
-        { type: "bun", top: bunTop },
-        { type: "sauce", top: sauceTop },
-        { type: "main", top: mainTop },
-      ];
-
-      const nearest = distances
-        .filter((distance) => distance.top <= 1)
-        .sort((a, b) => b.top - a.top)[0].type;
-      setActiveTab(nearest);
-    };
-
-    container.addEventListener("scroll", handleScroll);
-    return () => container.removeEventListener("scroll", handleScroll);
-  }, []);
+  const { activeTab, scrollToSection } = useScrollSection(
+    containerRef,
+    bunRef,
+    sauceRef,
+    mainRef
+  );
 
   return (
     <div className={ingredientsStyles.mainBlock}>
