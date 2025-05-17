@@ -61,7 +61,7 @@ function BurgerIngredients() {
               <IngredientItem
                 key={ingredient._id}
                 ingredient={ingredient}
-                count={getIngredientCount(ingredient)}
+                count={getIngredientCount(ingredient) * 2}
               />
             ))}
           </ul>
