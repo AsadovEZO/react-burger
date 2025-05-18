@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import IngredientDetails from "../ingredient-details/ingredient-details";
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
-import IngredientItem from "./ingredients-item/ingredients-item";
+import IngredientSection from "./ingredients-section";
 import useScrollSection from "../../hooks/use-scroll-section";
 import { hideIngredient } from "../../services/ingredient-details-slice";
 
@@ -21,6 +21,15 @@ function BurgerIngredients() {
     return { buns, sauces, mains };
   }, [data]);
 
+  const counts = useMemo(() => {
+    const countsMap = {};
+    selectedIngredients.forEach((item) => {
+      const count = item.type === "bun" ? 2 : 1;
+      countsMap[item._id] = (countsMap[item._id] || 0) + count;
+    });
+    return countsMap;
+  }, [selectedIngredients]);
+
   const dispatch = useDispatch();
 
   const closeModal = () => {
@@ -31,11 +40,6 @@ function BurgerIngredients() {
   const bunRef = useRef(null);
   const sauceRef = useRef(null);
   const mainRef = useRef(null);
-
-  const getIngredientCount = (ingredient) => {
-    return selectedIngredients.filter((item) => item._id === ingredient._id)
-      .length;
-  };
 
   const { activeTab, scrollToSection } = useScrollSection(
     containerRef,
@@ -54,42 +58,24 @@ function BurgerIngredients() {
         ref={containerRef}
         className={ingredientsStyles.scrollableContainer}
       >
-        <section ref={bunRef}>
-          <article className="text text_type_main-medium">Булки</article>
-          <ul className={ingredientsStyles.itemsGrid}>
-            {buns.map((ingredient) => (
-              <IngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                count={getIngredientCount(ingredient) * 2}
-              />
-            ))}
-          </ul>
-        </section>
-        <section ref={sauceRef}>
-          <article className="text text_type_main-medium">Соусы</article>
-          <ul className={ingredientsStyles.itemsGrid}>
-            {sauces.map((ingredient) => (
-              <IngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                count={getIngredientCount(ingredient)}
-              />
-            ))}
-          </ul>
-        </section>
-        <section ref={mainRef}>
-          <article className="text text_type_main-medium">Начинки</article>
-          <ul className={ingredientsStyles.itemsGrid}>
-            {mains.map((ingredient) => (
-              <IngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                count={getIngredientCount(ingredient)}
-              />
-            ))}
-          </ul>
-        </section>
+        <IngredientSection
+          sectionRef={bunRef}
+          ingredientsList={buns}
+          name="Булки"
+          counts={counts}
+        />
+        <IngredientSection
+          sectionRef={sauceRef}
+          ingredientsList={sauces}
+          name="Соусы"
+          counts={counts}
+        />
+        <IngredientSection
+          sectionRef={mainRef}
+          ingredientsList={mains}
+          name="Начинки"
+          counts={counts}
+        />
       </section>
 
       {ingredientDetails.isShowingModal &&
