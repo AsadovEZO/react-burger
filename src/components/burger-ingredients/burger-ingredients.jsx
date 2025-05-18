@@ -1,99 +1,96 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
+import Modal from "../modal/modal";
+import { useRef, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
+import IngredientDetails from "../ingredient-details/ingredient-details";
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
-import IngredientItem from "./ingredients-item/ingredients-item";
-import { IngredientType } from "../../utils/types.js";
-import Modal from "../modal/modal";
-import IngredientDetails from "../ingredient-details/ingredient-details";
+import IngredientSection from "./ingredients-section";
+import useScrollSection from "../../hooks/use-scroll-section";
+import { hideIngredient } from "../../services/ingredient-details-slice";
 
-function BurgerIngredients({ ingredients, selectedIngredients }) {
-  const buns = ingredients.filter((item) => item.type === "bun");
-  const sauces = ingredients.filter((item) => item.type === "sauce");
-  const mains = ingredients.filter((item) => item.type === "main");
+function BurgerIngredients() {
+  const selectedIngredients = useSelector((state) => state.burgerConstructor);
+  const ingredientDetails = useSelector((state) => state.ingredientDetails);
 
-  const [modalState, setModalState] = useState({
-    isShowingModal: false,
-    selectedIngredient: null,
-  });
+  const data = useSelector((state) => state.burgerIngredients.data);
+  const { buns, sauces, mains } = useMemo(() => {
+    const buns = data.filter((item) => item.type === "bun");
+    const sauces = data.filter((item) => item.type === "sauce");
+    const mains = data.filter((item) => item.type === "main");
+    return { buns, sauces, mains };
+  }, [data]);
+
+  const counts = useMemo(() => {
+    const countsMap = {};
+    selectedIngredients.forEach((item) => {
+      const count = item.type === "bun" ? 2 : 1;
+      countsMap[item._id] = (countsMap[item._id] || 0) + count;
+    });
+    return countsMap;
+  }, [selectedIngredients]);
+
+  const dispatch = useDispatch();
 
   const closeModal = () => {
-    setModalState({
-      isShowingModal: false,
-      selectedIngredient: null,
-    });
+    dispatch(hideIngredient());
   };
 
-  const getIngredientCount = (ingredient) => {
-    return selectedIngredients.filter((item) => item._id === ingredient._id)
-      .length;
-  };
+  const containerRef = useRef(null);
+  const bunRef = useRef(null);
+  const sauceRef = useRef(null);
+  const mainRef = useRef(null);
+
+  const { activeTab, scrollToSection } = useScrollSection(
+    containerRef,
+    bunRef,
+    sauceRef,
+    mainRef
+  );
 
   return (
     <div className={ingredientsStyles.mainBlock}>
       <section className={ingredientsStyles.header}>
         <article className="text text_type_main-large">Соберите бургер</article>
       </section>
-      <IngredientsMenu />
-      <section className={ingredientsStyles.scrollableContainer}>
-        <section>
-          <article className="text text_type_main-medium">Булки</article>
-          <ul className={ingredientsStyles.itemsGrid}>
-            {buns.map((ingredient) => (
-              <IngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                count={getIngredientCount(ingredient)}
-                setModalState={setModalState}
-              />
-            ))}
-          </ul>
-        </section>
-        <section>
-          <article className="text text_type_main-medium">Соусы</article>
-          <ul className={ingredientsStyles.itemsGrid}>
-            {sauces.map((ingredient) => (
-              <IngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                count={getIngredientCount(ingredient)}
-                setModalState={setModalState}
-              />
-            ))}
-          </ul>
-        </section>
-        <section>
-          <article className="text text_type_main-medium">Начинки</article>
-          <ul className={ingredientsStyles.itemsGrid}>
-            {mains.map((ingredient) => (
-              <IngredientItem
-                key={ingredient._id}
-                ingredient={ingredient}
-                count={getIngredientCount(ingredient)}
-                setModalState={setModalState}
-              />
-            ))}
-          </ul>
-        </section>
+      <IngredientsMenu activeTab={activeTab} setActiveTab={scrollToSection} />
+      <section
+        ref={containerRef}
+        className={ingredientsStyles.scrollableContainer}
+      >
+        <IngredientSection
+          sectionRef={bunRef}
+          ingredientsList={buns}
+          name="Булки"
+          counts={counts}
+        />
+        <IngredientSection
+          sectionRef={sauceRef}
+          ingredientsList={sauces}
+          name="Соусы"
+          counts={counts}
+        />
+        <IngredientSection
+          sectionRef={mainRef}
+          ingredientsList={mains}
+          name="Начинки"
+          counts={counts}
+        />
       </section>
 
-      {modalState.isShowingModal && modalState.selectedIngredient && (
-        <Modal
-          show={modalState.isShowingModal}
-          onCloseButtonClick={closeModal}
-          headerText="Детали ингредиента"
-          type="ingredient"
-        >
-          <IngredientDetails ingredient={modalState.selectedIngredient} />
-        </Modal>
-      )}
+      {ingredientDetails.isShowingModal &&
+        ingredientDetails.selectedIngredient && (
+          <Modal
+            show={ingredientDetails.isShowingModal}
+            onCloseButtonClick={closeModal}
+            headerText="Детали ингредиента"
+            type="ingredient"
+          >
+            <IngredientDetails />
+          </Modal>
+        )}
     </div>
   );
 }
-
-BurgerIngredients.propTypes = {
-  ingredients: PropTypes.arrayOf(IngredientType).isRequired,
-  selectedIngredients: PropTypes.arrayOf(IngredientType),
-};
 
 export default BurgerIngredients;

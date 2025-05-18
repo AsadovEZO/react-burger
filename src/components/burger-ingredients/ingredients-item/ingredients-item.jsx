@@ -1,22 +1,34 @@
+import { useDispatch } from "react-redux";
+import { useDrag } from "react-dnd";
 import PropTypes from "prop-types";
-import styles from "./ingredients-item.module.css";
+
 import { IngredientType } from "../../../utils/types.js";
+import styles from "./ingredients-item.module.css";
+import { showIngredient } from "../../../services/ingredient-details-slice";
 import {
   CurrencyIcon,
   Counter,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
-const IngredientItem = ({ ingredient, count, setModalState }) => {
+const IngredientItem = ({ ingredient, count }) => {
   const { name, price, image } = ingredient;
+
+  const dispatch = useDispatch();
+
   const handleClick = () => {
-    setModalState({
-      isShowingModal: true,
-      selectedIngredient: ingredient,
-    });
+    dispatch(showIngredient(ingredient));
   };
 
+  const [{ opacity }, dragRef] = useDrag({
+    type: "addIngredient",
+    item: { ingredient },
+    collect: (monitor) => ({
+      opacity: monitor.isDragging() ? 0.5 : 1,
+    }),
+  });
+
   return (
-    <div className={styles.card}>
+    <div className={styles.card} style={{ opacity }} ref={dragRef}>
       <button className={styles.addButton} onClick={handleClick}>
         {count > 0 && (
           <div className={styles.counter}>
@@ -39,7 +51,6 @@ const IngredientItem = ({ ingredient, count, setModalState }) => {
 IngredientItem.propTypes = {
   ingredient: IngredientType.isRequired,
   count: PropTypes.number.isRequired,
-  setModalState: PropTypes.func.isRequired,
 };
 
 export default IngredientItem;
