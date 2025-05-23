@@ -48,17 +48,15 @@ function IngredientElement({ ingredient, newIndex }) {
   }
 
   return (
-    <section className={styles.ingredientsList} style={{ opacity }} ref={ref}>
-      <div key={ingredient.uniqueId} className={styles.ingredientItem}>
-        <DragIcon type="primary" />
-        <ConstructorElement
-          text={ingredient.name}
-          price={ingredient.price}
-          thumbnail={ingredient.image}
-          handleClose={() => dispatch(handleRemove(ingredient))}
-        />
-      </div>
-    </section>
+    <div className={styles.ingredientItem} style={{ opacity }} ref={ref}>
+      <DragIcon type="primary" />
+      <ConstructorElement
+        text={ingredient.name}
+        price={ingredient.price}
+        thumbnail={ingredient.image}
+        handleClose={() => dispatch(handleRemove(ingredient))}
+      />
+    </div>
   );
 }
 

@@ -1,16 +1,10 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
-import { Ingredient } from "../utils/types"
+import { Ingredient, BurgerIngredientsState } from "../utils/types"
 
 interface IngredientsApiResponse {
   success: boolean;
   data: Ingredient[];
-}
-
-interface BurgerIngredientsState {
-  isLoading: boolean;
-  data: Ingredient[];
-  hasError: boolean;
 }
 
 const url = "https://norma.nomoreparties.space/api/ingredients";

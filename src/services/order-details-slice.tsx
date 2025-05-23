@@ -17,11 +17,6 @@ type OrderState = {
   hasError: boolean;
 };
 
-// interface OrderApiResponse {
-//   success: boolean;
-//   data: OrderState;
-// }
-
 const url = "https://norma.nomoreparties.space/api/orders";
 
 const initialState: OrderState = {
@@ -38,7 +33,6 @@ export const postOrder = createAsyncThunk<
 >(
   "orderDetails/postOrder",
   async (ingredients, { rejectWithValue }) => {
-    console.log(ingredients)
     try {
       const response = await fetch(url, {
         method: "POST",

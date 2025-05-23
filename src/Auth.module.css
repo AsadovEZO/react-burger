@@ -1,0 +1,61 @@
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.loginContainer {
+  border-radius: 8px;
+  max-width: 450px;
+  text-align: center;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 16px;
+}
+
+.links {
+  margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.profilePage {
+  display: flex;
+  width: 100%;
+  max-width: 1180px;
+  margin: 120px auto 0;
+  gap: 60px;
+}
+
+.profileNav {
+  width: 280px;
+}
+
+.profileNavItem {
+  height: 64px;
+  display: flex;
+  align-items: center;
+}
+
+.profileLink {
+  text-decoration: none;
+  color: #8585ad;
+}
+
+.profileLinkActive {
+  text-decoration: none;
+  color: #f2f2f3;
+}
