@@ -13,4 +13,20 @@ export interface Ingredient {
     __v: number;
     uniqueId?: string; 
   }
+
+  export interface BurgerIngredientsState {
+  isLoading: boolean;
+  data: Ingredient[];
+  hasError: boolean;
+}
+
+export interface RootState {
+  burgerIngredients: BurgerIngredientsState;
+}
   
+export type User = {
+  id: string;
+  email: string;
+  name: string;
+  password: string;
+};

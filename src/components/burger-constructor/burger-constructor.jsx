@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { useDrop } from "react-dnd";
+import { useNavigate } from "react-router-dom";
 
 import Modal from "../modal/modal";
 import BunElement from "./bun-element";
@@ -11,6 +12,9 @@ import { postOrder, hideOrderModal } from "../../services/order-details-slice";
 import { handleAdd } from "../../services/burger-constructor-slice";
 
 function BurgerConstructor() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state) => state.user.user);
   const selectedIngredients = useSelector((state) => state.burgerConstructor);
   const bun = selectedIngredients.find((item) => item.type === "bun");
   const otherIngredients = selectedIngredients.filter(
@@ -21,9 +25,10 @@ function BurgerConstructor() {
     (state) => state.orderDetails.isShowingModal
   );
 
-  const dispatch = useDispatch();
-
   const handleOrderClick = () => {
+    if (!user) {
+      navigate("/login");
+    }
     dispatch(
       postOrder(selectedIngredients.map((ingredient) => ingredient._id))
     );
