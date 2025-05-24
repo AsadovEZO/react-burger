@@ -4,16 +4,19 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
+import { useForm } from "../hooks/useForm";
+import { ENDPOINTS } from "../utils/api";
 import {
   Button,
   Input,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { ENDPOINTS } from "../utils/api";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState("");
+  const { values, handleChange } = useForm({
+    email: "",
+  });
   const [error, setError] = useState("");
 
   const handleForgotSubmit = async (e) => {
@@ -24,7 +27,7 @@ export function ForgotPassword() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email: email }),
+        body: JSON.stringify(values),
       });
       if (!response.ok) {
         throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
@@ -52,8 +55,8 @@ export function ForgotPassword() {
             <Input
               type={"email"}
               placeholder={"Укажите e-mail"}
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              onChange={handleChange}
+              value={values.email}
               name={"email"}
               error={!!error}
               errorText={error}

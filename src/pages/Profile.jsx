@@ -6,7 +6,7 @@ import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { logout, updateUser } from "../services/user/thunks";
-
+import { useForm } from "../hooks/useForm";
 import {
   Button,
   Input,
@@ -21,16 +21,21 @@ export function Profile() {
   const { user, isLoading } = useSelector((state) => state.user);
 
   const [error, setError] = useState("");
-  const [name, setName] = useState(user.name);
-  const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState("");
+  const { values, handleChange, setValues } = useForm({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   useEffect(() => {
     if (user) {
-      setName(user.name || "");
-      setEmail(user.email || "");
+      setValues({
+        name: user.name || "",
+        email: user.email || "",
+        password: "",
+      });
     }
-  }, [user]);
+  }, [user, setValues]);
 
   const handleLogout = async (e) => {
     e.preventDefault();
@@ -50,16 +55,12 @@ export function Profile() {
 
   const handleUpdateUser = async (e) => {
     e.preventDefault();
-    await dispatch(
-      updateUser({ email: email, name: name, password: password })
-    ).unwrap();
+    await dispatch(updateUser(values)).unwrap();
   };
 
   const handleCancel = (e) => {
     e.preventDefault();
-    setName(user.name);
-    setEmail(user.email);
-    setPassword("");
+    setValues({ name: user.name, email: user.email, password: "" });
   };
 
   return (
@@ -134,8 +135,8 @@ export function Profile() {
               <Input
                 type={"text"}
                 placeholder={"Имя"}
-                onChange={(e) => setName(e.target.value)}
-                value={name}
+                onChange={handleChange}
+                value={values.name}
                 name={"name"}
                 error={false}
                 // ref={inputRef}
@@ -145,19 +146,21 @@ export function Profile() {
                 icon={"EditIcon"}
               />
               <EmailInput
-                onChange={(e) => setEmail(e.target.value)}
-                value={email}
+                onChange={handleChange}
+                value={values.email}
                 name={"email"}
                 isIcon={true}
               />
               <PasswordInput
-                onChange={(e) => setPassword(e.target.value)}
-                value={password}
+                onChange={handleChange}
+                value={values.password}
                 name={"password"}
                 extraClass="mb-2"
                 icon="EditIcon"
               />
-              {(password || name !== user.name || email !== user.email) && (
+              {(values.password ||
+                values.name !== user.name ||
+                values.email !== user.email) && (
                 <>
                   <Button htmlType="submit" type="primary" size="medium">
                     Сохранить

@@ -6,6 +6,7 @@ import styles from "../App.module.css";
 import AppHeader from "../components/app-header/app-header";
 import AuthStyles from "../Auth.module.css";
 import { login } from "../services/user/thunks";
+import { useForm } from "../hooks/useForm";
 import {
   Button,
   EmailInput,
@@ -22,21 +23,20 @@ export function Login() {
   const from = location.state?.from?.pathname || "/";
 
   const [error, setError] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { values, handleChange } = useForm({ email: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!email) {
+    if (!values.email) {
       setError("Введите email");
       return;
     }
-    if (!password) {
+    if (!values.password) {
       setError("Введите пароль");
       return;
     }
     try {
-      await dispatch(login({ email, password })).unwrap();
+      await dispatch(login(values)).unwrap();
       setError("");
       navigate(from, { replace: true });
     } catch (err) {
@@ -58,14 +58,14 @@ export function Login() {
           <form className={AuthStyles.form} onSubmit={handleSubmit}>
             <h1 className="text text_type_main-medium">Вход</h1>
             <EmailInput
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              onChange={handleChange}
+              value={values.email}
               name={"email"}
               isIcon={false}
             />
             <PasswordInput
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
+              onChange={handleChange}
+              value={values.password}
               name={"password"}
               extraClass="mb-2"
             />

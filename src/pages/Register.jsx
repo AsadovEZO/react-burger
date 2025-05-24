@@ -6,6 +6,7 @@ import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { register } from "../services/user/thunks";
+import { useForm } from "../hooks/useForm";
 import {
   Button,
   EmailInput,
@@ -21,26 +22,28 @@ export function Register() {
   const from = location.state?.from?.pathname || "/";
 
   const [error, setError] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { values, handleChange } = useForm({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!name) {
+    if (!values.name) {
       setError("Введите имя");
       return;
     }
-    if (!email) {
+    if (!values.email) {
       setError("Введите email");
       return;
     }
-    if (!password) {
+    if (!values.password) {
       setError("Введите пароль");
       return;
     }
     try {
-      await dispatch(register({ name, email, password })).unwrap();
+      await dispatch(register(values)).unwrap();
       setError("");
       navigate(from, { replace: true });
     } catch (err) {
@@ -64,21 +67,21 @@ export function Register() {
             <Input
               type={"text"}
               placeholder={"Имя"}
-              onChange={(e) => setName(e.target.value)}
-              value={name}
+              onChange={handleChange}
+              value={values.name}
               name={"name"}
               size={"default"}
               extraClass="ml-1"
             />
             <EmailInput
-              onChange={(e) => setEmail(e.target.value)}
-              value={email}
+              onChange={handleChange}
+              value={values.email}
               name={"email"}
               isIcon={false}
             />
             <PasswordInput
-              onChange={(e) => setPassword(e.target.value)}
-              value={password}
+              onChange={handleChange}
+              value={values.password}
               name={"password"}
               extraClass="mb-2"
             />
