@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
+import { ENDPOINTS } from "../utils/api";
 import {
   Button,
   PasswordInput,
@@ -18,8 +19,6 @@ export function ResetPassword() {
   const [token, setToken] = useState("");
   const [error, setError] = useState("");
 
-  const url = "https://norma.nomoreparties.space/api/password-reset/reset";
-
   useEffect(() => {
     const isAllowedFromState = location.state?.allowed === true;
 
@@ -31,7 +30,7 @@ export function ResetPassword() {
   const handleResetSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.passwordResetConfirm, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

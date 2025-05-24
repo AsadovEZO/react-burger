@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import { type User } from '../../utils/types';
 import { getCookie, setCookie, deleteCookie } from './cookie-utils';
+import { ENDPOINTS } from "../../utils/api";
 
 interface UserResponce {
   success: boolean;
@@ -15,8 +16,7 @@ export const register = createAsyncThunk<User, { name: string; email: string; pa
   'user/register',
   async ({ name, email, password }, { rejectWithValue }) => {
     try {
-      const url = "https://norma.nomoreparties.space/api/auth/register"
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.auth.register, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -48,8 +48,7 @@ export const login = createAsyncThunk<User, { email: string; password: string },
   'user/login',
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const url = "https://norma.nomoreparties.space/api/auth/login"
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.auth.login, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -87,8 +86,7 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
       if (!refreshToken) {
         return rejectWithValue('Токен не найден');
       }
-      const url = "https://norma.nomoreparties.space/api/auth/logout"
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.auth.logout, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -125,8 +123,7 @@ export const refreshToken = createAsyncThunk<
       return rejectWithValue("Токен не найден");
     }
     console.log('refreshTokenValue', refreshTokenValue)
-    const url = "https://norma.nomoreparties.space/api/auth/token";
-    const response = await fetch(url, {
+    const response = await fetch(ENDPOINTS.auth.token, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -163,8 +160,7 @@ export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
         return rejectWithValue("Токен не найден");
       }
 
-      const url = "https://norma.nomoreparties.space/api/auth/user"
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.auth.user, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -207,8 +203,7 @@ export const updateUser = createAsyncThunk<
     console.log( email, name, password )
     const body = password ? { email, name, password } : { email, name };
     
-    const url = "https://norma.nomoreparties.space/api/auth/user"
-    const response = await fetch(url, {
+    const response = await fetch(ENDPOINTS.auth.user, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

@@ -8,6 +8,7 @@ import {
   Button,
   Input,
 } from "@ya.praktikum/react-developer-burger-ui-components";
+import { ENDPOINTS } from "../utils/api";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -18,8 +19,7 @@ export function ForgotPassword() {
   const handleForgotSubmit = async (e) => {
     e.preventDefault();
     try {
-      const url = "https://norma.nomoreparties.space/api/password-reset";
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.passwordReset, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
