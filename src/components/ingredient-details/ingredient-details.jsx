@@ -6,6 +6,11 @@ const IngredientDetails = () => {
   const ingredient = useSelector(
     (state) => state.ingredientDetails.selectedIngredient
   );
+
+  if (!ingredient) {
+    return null;
+  }
+
   return (
     <div className={styles.container}>
       <img

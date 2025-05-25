@@ -1,5 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction  } from "@reduxjs/toolkit";
 
+import { ENDPOINTS } from "../utils/api";
+
 type OrderDetails = {
   number: number,
 };
@@ -17,13 +19,6 @@ type OrderState = {
   hasError: boolean;
 };
 
-// interface OrderApiResponse {
-//   success: boolean;
-//   data: OrderState;
-// }
-
-const url = "https://norma.nomoreparties.space/api/orders";
-
 const initialState: OrderState = {
   isShowingModal: false,
   data: null,
@@ -38,9 +33,8 @@ export const postOrder = createAsyncThunk<
 >(
   "orderDetails/postOrder",
   async (ingredients, { rejectWithValue }) => {
-    console.log(ingredients)
     try {
-      const response = await fetch(url, {
+      const response = await fetch(ENDPOINTS.orders, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -1,6 +1,7 @@
 import { useDispatch } from "react-redux";
 import { useDrag } from "react-dnd";
 import PropTypes from "prop-types";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { IngredientType } from "../../../utils/types.js";
 import styles from "./ingredients-item.module.css";
@@ -11,12 +12,14 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
 const IngredientItem = ({ ingredient, count }) => {
-  const { name, price, image } = ingredient;
-
+  const { name, price, image, _id } = ingredient;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const handleClick = () => {
     dispatch(showIngredient(ingredient));
+    navigate(`/ingredients/${_id}`, { state: { background: location } });
   };
 
   const [{ opacity }, dragRef] = useDrag({

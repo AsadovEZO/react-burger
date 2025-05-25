@@ -21,7 +21,10 @@ export const ingredientDetailsSlice = createSlice({
         selectedIngredient: action.payload,
       };
     },
-    hideIngredient: () => { return initialState },
+    hideIngredient: (state) => {
+      state.isShowingModal = false;
+      state.selectedIngredient = null;
+    },
   },
 });
 

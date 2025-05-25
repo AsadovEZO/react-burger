@@ -1,17 +1,13 @@
-import Modal from "../modal/modal";
 import { useRef, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import IngredientDetails from "../ingredient-details/ingredient-details";
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientSection from "./ingredients-section";
 import useScrollSection from "../../hooks/use-scroll-section";
-import { hideIngredient } from "../../services/ingredient-details-slice";
 
 function BurgerIngredients() {
   const selectedIngredients = useSelector((state) => state.burgerConstructor);
-  const ingredientDetails = useSelector((state) => state.ingredientDetails);
 
   const data = useSelector((state) => state.burgerIngredients.data);
   const { buns, sauces, mains } = useMemo(() => {
@@ -29,12 +25,6 @@ function BurgerIngredients() {
     });
     return countsMap;
   }, [selectedIngredients]);
-
-  const dispatch = useDispatch();
-
-  const closeModal = () => {
-    dispatch(hideIngredient());
-  };
 
   const containerRef = useRef(null);
   const bunRef = useRef(null);
@@ -77,18 +67,6 @@ function BurgerIngredients() {
           counts={counts}
         />
       </section>
-
-      {ingredientDetails.isShowingModal &&
-        ingredientDetails.selectedIngredient && (
-          <Modal
-            show={ingredientDetails.isShowingModal}
-            onCloseButtonClick={closeModal}
-            headerText="Детали ингредиента"
-            type="ingredient"
-          >
-            <IngredientDetails />
-          </Modal>
-        )}
     </div>
   );
 }
