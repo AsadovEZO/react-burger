@@ -1,16 +1,20 @@
-import { useEffect } from "react";
+import { useEffect, ReactNode, MouseEvent } from "react";
 import modalOverlayStyles from "./modal-overlay.module.css";
-import PropTypes from "prop-types";
 
-const ModalOverlay = ({ children, onClose }) => {
-  const handleOverlayClick = (e) => {
+interface IModalOverlay {
+  children: ReactNode;
+  onClose: () => void;
+}
+
+const ModalOverlay = ({ children, onClose }: IModalOverlay) => {
+  const handleOverlayClick = (e: MouseEvent<HTMLElement>) => {
     if (e.target === e.currentTarget) {
       onClose();
     }
   };
 
   useEffect(() => {
-    const handleEsc = (e) => {
+    const handleEsc = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         onClose();
       }
@@ -27,11 +31,6 @@ const ModalOverlay = ({ children, onClose }) => {
       {children}
     </div>
   );
-};
-
-ModalOverlay.propTypes = {
-  children: PropTypes.node.isRequired,
-  onClose: PropTypes.func.isRequired,
 };
 
 export default ModalOverlay;

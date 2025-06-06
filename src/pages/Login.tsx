@@ -1,39 +1,41 @@
-import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useState, FormEvent } from "react";
+import { useSelector } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import styles from "../App.module.css";
-import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
-import { register } from "../services/user/thunks";
+import AuthStyles from "../Auth.module.css";
+import { login } from "../services/user/thunks";
 import { useForm } from "../hooks/useForm";
+import { useAppDispatch, RootState } from "../services/store";
 import {
   Button,
   EmailInput,
   PasswordInput,
-  Input,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
-export function Register() {
-  const dispatch = useDispatch();
+type ILoginFormValues = {
+  email: string;
+  password: string;
+};
+
+export function Login() {
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
+
+  const userError = useSelector((state: RootState) => state.user.error);
 
   const from = location.state?.from?.pathname || "/";
 
   const [error, setError] = useState("");
-  const { values, handleChange } = useForm({
-    name: "",
+  const { values, handleChange } = useForm<ILoginFormValues>({
     email: "",
     password: "",
   });
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!values.name) {
-      setError("Введите имя");
-      return;
-    }
     if (!values.email) {
       setError("Введите email");
       return;
@@ -43,16 +45,16 @@ export function Register() {
       return;
     }
     try {
-      await dispatch(register(values)).unwrap();
+      await dispatch(login(values)).unwrap();
       setError("");
       navigate(from, { replace: true });
     } catch (err) {
       if (typeof err === "string") {
         setError(err);
-      } else if (err?.message) {
+      } else if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError("Произошла ошибка при регистрации");
+        setError("Произошла ошибка при авторизации");
       }
     }
   };
@@ -63,16 +65,7 @@ export function Register() {
       <div className={AuthStyles.main}>
         <section className={AuthStyles.loginContainer}>
           <form className={AuthStyles.form} onSubmit={handleSubmit}>
-            <h1 className="text text_type_main-medium">Регистрация</h1>
-            <Input
-              type={"text"}
-              placeholder={"Имя"}
-              onChange={handleChange}
-              value={values.name}
-              name={"name"}
-              size={"default"}
-              extraClass="ml-1"
-            />
+            <h1 className="text text_type_main-medium">Вход</h1>
             <EmailInput
               onChange={handleChange}
               value={values.email}
@@ -85,19 +78,24 @@ export function Register() {
               name={"password"}
               extraClass="mb-2"
             />
-            {error && (
+            {error || userError ? (
               <p className="text text_type_main-default text_color_error">
-                {error}
+                {error || userError}
               </p>
-            )}
-
+            ) : null}
             <Button htmlType="submit" type="primary" size="medium">
-              Зарегистрироваться
+              Войти
             </Button>
           </form>
+
           <div className={AuthStyles.links}>
             <p className="text text_type_main-default text_color_inactive pl-2">
-              Уже зарегистрированы? <Link to="/login">Войти</Link>
+              Вы - новый пользователь?{" "}
+              <Link to="/register">Зарегистрироваться</Link>
+            </p>
+            <p className="text text_type_main-default text_color_inactive pl-2">
+              Забыли пароль?{" "}
+              <Link to="/forgot-password">Восстановить пароль</Link>
             </p>
           </div>
         </section>

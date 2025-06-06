@@ -5,11 +5,14 @@ import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientSection from "./ingredients-section";
 import useScrollSection from "../../hooks/use-scroll-section";
+import { RootState } from "../../services/store";
 
 function BurgerIngredients() {
-  const selectedIngredients = useSelector((state) => state.burgerConstructor);
+  const selectedIngredients = useSelector(
+    (state: RootState) => state.burgerConstructor
+  );
 
-  const data = useSelector((state) => state.burgerIngredients.data);
+  const data = useSelector((state: RootState) => state.burgerIngredients.data);
   const { buns, sauces, mains } = useMemo(() => {
     const buns = data.filter((item) => item.type === "bun");
     const sauces = data.filter((item) => item.type === "sauce");
@@ -18,7 +21,7 @@ function BurgerIngredients() {
   }, [data]);
 
   const counts = useMemo(() => {
-    const countsMap = {};
+    const countsMap: { [key: string]: number } = {};
     selectedIngredients.forEach((item) => {
       const count = item.type === "bun" ? 2 : 1;
       countsMap[item._id] = (countsMap[item._id] || 0) + count;
@@ -26,10 +29,10 @@ function BurgerIngredients() {
     return countsMap;
   }, [selectedIngredients]);
 
-  const containerRef = useRef(null);
-  const bunRef = useRef(null);
-  const sauceRef = useRef(null);
-  const mainRef = useRef(null);
+  const containerRef = useRef<HTMLElement>(null!);
+  const bunRef = useRef<HTMLElement>(null!);
+  const sauceRef = useRef<HTMLElement>(null!);
+  const mainRef = useRef<HTMLElement>(null!);
 
   const { activeTab, scrollToSection } = useScrollSection(
     containerRef,

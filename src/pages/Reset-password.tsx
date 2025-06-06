@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import styles from "../App.module.css";
@@ -6,10 +6,10 @@ import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { useForm } from "../hooks/useForm";
 import { ENDPOINTS } from "../utils/api";
+import CustomInput from "../components/customInput";
 import {
   Button,
   PasswordInput,
-  Input,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
 export function ResetPassword() {
@@ -30,7 +30,7 @@ export function ResetPassword() {
     }
   }, [navigate, location.state]);
 
-  const handleResetSubmit = async (e) => {
+  const handleResetSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await fetch(ENDPOINTS.passwordResetConfirm, {
@@ -53,7 +53,13 @@ export function ResetPassword() {
       navigate("/login", { state: { allowed: false } });
       return data;
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (typeof err === "string") {
+        setError(err);
+      } else {
+        setError("Неизвестная ошибка");
+      }
     }
   };
   return (
@@ -72,7 +78,7 @@ export function ResetPassword() {
               name={"password"}
               extraClass="mb-2"
             />
-            <Input
+            <CustomInput
               type={"text"}
               placeholder={"Введите код из письма"}
               onChange={handleChange}

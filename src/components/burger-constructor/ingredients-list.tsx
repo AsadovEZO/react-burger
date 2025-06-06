@@ -1,11 +1,13 @@
-import PropTypes from "prop-types";
-
-import { IngredientType } from "../../utils/types.js";
+import { Ingredient } from "../../utils/types";
 
 import styles from "./burger-constructor.module.css";
-import IngredientElement from "./ingredient-element.jsx";
+import IngredientElement from "./ingredient-element";
 
-function IngredientsList({ ingredients }) {
+interface IIngredientsList {
+  ingredients: Ingredient[];
+}
+
+function IngredientsList({ ingredients }: IIngredientsList) {
   if (!ingredients || !Array.isArray(ingredients) || ingredients.length === 0) {
     return (
       <p className="text text_type_main-medium" style={{ textAlign: "center" }}>
@@ -26,9 +28,5 @@ function IngredientsList({ ingredients }) {
     </section>
   );
 }
-
-IngredientsList.propTypes = {
-  ingredients: PropTypes.arrayOf(IngredientType),
-};
 
 export default IngredientsList;

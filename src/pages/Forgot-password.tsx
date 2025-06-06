@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 import styles from "../App.module.css";
@@ -6,10 +6,8 @@ import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { useForm } from "../hooks/useForm";
 import { ENDPOINTS } from "../utils/api";
-import {
-  Button,
-  Input,
-} from "@ya.praktikum/react-developer-burger-ui-components";
+import CustomInput from "../components/customInput";
+import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -19,7 +17,7 @@ export function ForgotPassword() {
   });
   const [error, setError] = useState("");
 
-  const handleForgotSubmit = async (e) => {
+  const handleForgotSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
       const response = await fetch(ENDPOINTS.passwordReset, {
@@ -39,7 +37,13 @@ export function ForgotPassword() {
       setError("");
       navigate("/reset-password", { state: { allowed: true } });
     } catch (err) {
-      setError(err.message);
+      if (err instanceof Error) {
+        setError(err.message);
+      } else if (typeof err === "string") {
+        setError(err);
+      } else {
+        setError("Неизвестная ошибка");
+      }
     }
   };
 
@@ -52,7 +56,7 @@ export function ForgotPassword() {
             <h1 className="text text_type_main-medium">
               Восстановление пароля
             </h1>
-            <Input
+            <CustomInput
               type={"email"}
               placeholder={"Укажите e-mail"}
               onChange={handleChange}
