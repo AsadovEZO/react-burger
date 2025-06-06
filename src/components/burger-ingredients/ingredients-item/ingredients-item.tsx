@@ -1,9 +1,9 @@
+import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useDrag } from "react-dnd";
-import PropTypes from "prop-types";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import { IngredientType } from "../../../utils/types.js";
+import { Ingredient } from "../../../utils/types";
 import styles from "./ingredients-item.module.css";
 import { showIngredient } from "../../../services/ingredient-details-slice";
 import {
@@ -11,7 +11,12 @@ import {
   Counter,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
-const IngredientItem = ({ ingredient, count }) => {
+interface IIngredientItem {
+  ingredient: Ingredient;
+  count: number;
+}
+
+const IngredientItem = ({ ingredient, count }: IIngredientItem) => {
   const { name, price, image, _id } = ingredient;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,6 +27,8 @@ const IngredientItem = ({ ingredient, count }) => {
     navigate(`/ingredients/${_id}`, { state: { background: location } });
   };
 
+  const ref = useRef<HTMLDivElement>(null);
+
   const [{ opacity }, dragRef] = useDrag({
     type: "addIngredient",
     item: { ingredient },
@@ -30,8 +37,10 @@ const IngredientItem = ({ ingredient, count }) => {
     }),
   });
 
+  dragRef(ref);
+
   return (
-    <div className={styles.card} style={{ opacity }} ref={dragRef}>
+    <div className={styles.card} style={{ opacity }} ref={ref}>
       <button className={styles.addButton} onClick={handleClick}>
         {count > 0 && (
           <div className={styles.counter}>
@@ -49,11 +58,6 @@ const IngredientItem = ({ ingredient, count }) => {
       </button>
     </div>
   );
-};
-
-IngredientItem.propTypes = {
-  ingredient: IngredientType.isRequired,
-  count: PropTypes.number.isRequired,
 };
 
 export default IngredientItem;

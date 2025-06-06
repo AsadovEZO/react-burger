@@ -30,3 +30,5 @@ export type User = {
   name: string;
   password: string;
 };
+
+export type TActiveTab = "bun" | "sauce" | "main"

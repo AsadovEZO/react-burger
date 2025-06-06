@@ -1,13 +1,13 @@
 import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
 import { getUser, refreshToken } from "./thunks";
 import { getCookie } from "./cookie-utils";
+import { useAppDispatch, RootState } from "../store";
 
 export default function useAuthCheck() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user.user);
-  const isLoading = useSelector((state) => state.user.isLoading);
+  const dispatch = useAppDispatch();
+  const { user, isLoading } = useSelector((state: RootState) => state.user);
 
   const hasChecked = useRef(false);
 

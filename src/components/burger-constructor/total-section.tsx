@@ -1,12 +1,15 @@
-import PropTypes from "prop-types";
-
 import {
   Button,
   CurrencyIcon,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from "./burger-constructor.module.css";
 
-function TotalSection({ totalPrice, onOrder }) {
+interface IIngredientElement {
+  totalPrice: number;
+  onOrder: () => void;
+}
+
+function TotalSection({ totalPrice, onOrder }: IIngredientElement) {
   return (
     <section className={styles.total}>
       <section className={styles.price}>
@@ -19,10 +22,5 @@ function TotalSection({ totalPrice, onOrder }) {
     </section>
   );
 }
-
-TotalSection.propTypes = {
-  totalPrice: PropTypes.number,
-  onOrder: PropTypes.func.isRequired,
-};
 
 export default TotalSection;

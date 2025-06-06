@@ -1,10 +1,17 @@
-import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
+import { useState, useEffect, RefObject } from "react";
+import { TActiveTab } from "../utils/types";
 
-const useScrollSection = (containerRef, bunRef, sauceRef, mainRef) => {
-  const [activeTab, setActiveTab] = useState("bun");
+type TDistances = { type: TActiveTab; top: number }[];
 
-  const scrollToSection = (type) => {
+const useScrollSection = (
+  containerRef: RefObject<HTMLElement>,
+  bunRef: RefObject<HTMLElement>,
+  sauceRef: RefObject<HTMLElement>,
+  mainRef: RefObject<HTMLElement>
+) => {
+  const [activeTab, setActiveTab] = useState<TActiveTab>("bun");
+
+  const scrollToSection = (type: TActiveTab) => {
     setActiveTab(type);
     if (type === "bun") bunRef.current?.scrollIntoView({ behavior: "smooth" });
     if (type === "sauce")
@@ -26,13 +33,13 @@ const useScrollSection = (containerRef, bunRef, sauceRef, mainRef) => {
       const mainTop =
         mainRef.current.getBoundingClientRect().top - containerTop;
 
-      const distances = [
+      const distances: TDistances = [
         { type: "bun", top: bunTop },
         { type: "sauce", top: sauceTop },
         { type: "main", top: mainTop },
       ];
 
-      const nearest = distances
+      const nearest: TActiveTab = distances
         .filter((distance) => distance.top <= 1)
         .sort((a, b) => b.top - a.top)[0].type;
       setActiveTab(nearest);
@@ -44,21 +51,6 @@ const useScrollSection = (containerRef, bunRef, sauceRef, mainRef) => {
   }, [containerRef, bunRef, sauceRef, mainRef]);
 
   return { activeTab, scrollToSection };
-};
-
-useScrollSection.propTypes = {
-  containerRef: PropTypes.shape({
-    current: PropTypes.any,
-  }).isRequired,
-  bunRef: PropTypes.shape({
-    current: PropTypes.any,
-  }).isRequired,
-  sauceRef: PropTypes.shape({
-    current: PropTypes.any,
-  }).isRequired,
-  mainRef: PropTypes.shape({
-    current: PropTypes.any,
-  }).isRequired,
 };
 
 export default useScrollSection;

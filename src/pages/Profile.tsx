@@ -1,5 +1,11 @@
-import { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import {
+  useState,
+  useEffect,
+  FormEvent,
+  SyntheticEvent,
+  MouseEvent,
+} from "react";
+import { useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 
 import styles from "../App.module.css";
@@ -7,18 +13,19 @@ import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { logout, updateUser } from "../services/user/thunks";
 import { useForm } from "../hooks/useForm";
+import { useAppDispatch, RootState } from "../services/store";
+import CustomInput from "../components/customInput";
 import {
   Button,
-  Input,
   EmailInput,
   PasswordInput,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 
 export function Profile() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const { user, isLoading } = useSelector((state) => state.user);
+  const { user, isLoading } = useSelector((state: RootState) => state.user);
 
   const [error, setError] = useState("");
   const { values, handleChange, setValues } = useForm({
@@ -37,7 +44,7 @@ export function Profile() {
     }
   }, [user, setValues]);
 
-  const handleLogout = async (e) => {
+  const handleLogout = async (e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     try {
       await dispatch(logout()).unwrap();
@@ -45,7 +52,7 @@ export function Profile() {
     } catch (err) {
       if (typeof err === "string") {
         setError(err);
-      } else if (err?.message) {
+      } else if (err instanceof Error) {
         setError(err.message);
       } else {
         setError("Произошла ошибка при регистрации");
@@ -53,14 +60,14 @@ export function Profile() {
     }
   };
 
-  const handleUpdateUser = async (e) => {
+  const handleUpdateUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     await dispatch(updateUser(values)).unwrap();
   };
 
-  const handleCancel = (e) => {
+  const handleCancel = (e: SyntheticEvent) => {
     e.preventDefault();
-    setValues({ name: user.name, email: user.email, password: "" });
+    user && setValues({ name: user.name, email: user.email, password: "" });
   };
 
   return (
@@ -132,7 +139,7 @@ export function Profile() {
           </nav>
           <section className={AuthStyles.loginContainer}>
             <form className={AuthStyles.form} onSubmit={handleUpdateUser}>
-              <Input
+              <CustomInput
                 type={"text"}
                 placeholder={"Имя"}
                 onChange={handleChange}
@@ -158,23 +165,24 @@ export function Profile() {
                 extraClass="mb-2"
                 icon="EditIcon"
               />
-              {(values.password ||
-                values.name !== user.name ||
-                values.email !== user.email) && (
-                <>
-                  <Button htmlType="submit" type="primary" size="medium">
-                    Сохранить
-                  </Button>
-                  <Button
-                    htmlType="button"
-                    type="primary"
-                    size="medium"
-                    onClick={handleCancel}
-                  >
-                    Отменить
-                  </Button>
-                </>
-              )}
+              {user &&
+                (values.password ||
+                  values.name !== user.name ||
+                  values.email !== user.email) && (
+                  <>
+                    <Button htmlType="submit" type="primary" size="medium">
+                      Сохранить
+                    </Button>
+                    <Button
+                      htmlType="button"
+                      type="primary"
+                      size="medium"
+                      onClick={handleCancel}
+                    >
+                      Отменить
+                    </Button>
+                  </>
+                )}
             </form>
           </section>
         </div>

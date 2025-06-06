@@ -1,11 +1,24 @@
-import PropTypes from "prop-types";
+import { RefObject } from "react";
 
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientItem from "./ingredients-item/ingredients-item";
-import { IngredientType } from "../../utils/types.js";
+import { Ingredient } from "../../utils/types";
 
-const IngredientSection = ({ sectionRef, ingredientsList, name, counts }) => {
-  const getIngredientCount = (ingredient) => counts?.[ingredient._id] || 0;
+interface IIngredient {
+  sectionRef: RefObject<HTMLElement>;
+  ingredientsList: Ingredient[];
+  name: "Булки" | "Соусы" | "Начинки";
+  counts: { [key: string]: number };
+}
+
+const IngredientSection = ({
+  sectionRef,
+  ingredientsList,
+  name,
+  counts,
+}: IIngredient) => {
+  const getIngredientCount = (ingredient: Ingredient) =>
+    counts?.[ingredient._id] || 0;
 
   if (!ingredientsList || ingredientsList.length === 0) {
     return (
@@ -30,15 +43,6 @@ const IngredientSection = ({ sectionRef, ingredientsList, name, counts }) => {
       </ul>
     </section>
   );
-};
-
-IngredientSection.propTypes = {
-  sectionRef: PropTypes.shape({
-    current: PropTypes.any,
-  }),
-  ingredientsList: PropTypes.arrayOf(IngredientType).isRequired,
-  name: PropTypes.string.isRequired,
-  counts: PropTypes.object,
 };
 
 export default IngredientSection;

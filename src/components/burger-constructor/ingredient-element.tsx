@@ -2,7 +2,7 @@ import { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { useDrag, useDrop } from "react-dnd";
 
-import { IngredientType } from "../../utils/types.js";
+import { Ingredient } from "../../utils/types";
 import {
   handleMove,
   handleRemove,
@@ -12,9 +12,13 @@ import {
   ConstructorElement,
   DragIcon,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import PropTypes from "prop-types";
 
-function IngredientElement({ ingredient, newIndex }) {
+interface IIngredientElement {
+  ingredient: Ingredient;
+  newIndex: number;
+}
+
+function IngredientElement({ ingredient, newIndex }: IIngredientElement) {
   const dispatch = useDispatch();
   const ref = useRef(null);
 
@@ -26,7 +30,11 @@ function IngredientElement({ ingredient, newIndex }) {
     }),
   });
 
-  const [, drop] = useDrop({
+  const [, drop] = useDrop<
+    { ingredient: Ingredient },
+    unknown,
+    { isHover: boolean }
+  >({
     accept: "moveIngredient",
     collect: (monitor) => ({
       isHover: monitor.isOver(),
@@ -54,15 +62,12 @@ function IngredientElement({ ingredient, newIndex }) {
         text={ingredient.name}
         price={ingredient.price}
         thumbnail={ingredient.image}
-        handleClose={() => dispatch(handleRemove(ingredient))}
+        handleClose={() =>
+          dispatch(handleRemove({ uniqueId: ingredient.uniqueId! }))
+        }
       />
     </div>
   );
 }
-
-IngredientElement.propTypes = {
-  ingredient: IngredientType,
-  newIndex: PropTypes.number.isRequired,
-};
 
 export default IngredientElement;

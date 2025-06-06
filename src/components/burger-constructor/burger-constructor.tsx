@@ -1,4 +1,4 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useDrop } from "react-dnd";
 import { useNavigate } from "react-router-dom";
 
@@ -10,19 +10,23 @@ import constructorStyles from "./burger-constructor.module.css";
 import OrderDetails from "../order-details/order-details";
 import { postOrder, hideOrderModal } from "../../services/order-details-slice";
 import { handleAdd } from "../../services/burger-constructor-slice";
+import { useAppDispatch, RootState } from "../../services/store";
+import { Ingredient } from "../../utils/types";
 
 function BurgerConstructor() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.user.user);
-  const selectedIngredients = useSelector((state) => state.burgerConstructor);
+  const user = useSelector((state: RootState) => state.user.user);
+  const selectedIngredients = useSelector(
+    (state: RootState) => state.burgerConstructor
+  );
   const bun = selectedIngredients.find((item) => item.type === "bun");
   const otherIngredients = selectedIngredients.filter(
     (item) => item.type !== "bun"
   );
 
   const isShowingOrderModal = useSelector(
-    (state) => state.orderDetails.isShowingModal
+    (state: RootState) => state.orderDetails.isShowingModal
   );
 
   const handleOrderClick = () => {
@@ -34,13 +38,19 @@ function BurgerConstructor() {
     );
   };
 
-  const [{ isHover }, dropNew] = useDrop({
+  const [{ isHover }, dropNew] = useDrop<
+    { ingredient: Ingredient },
+    unknown,
+    { isHover: boolean }
+  >({
     accept: "addIngredient",
     collect: (monitor) => ({
       isHover: monitor.isOver(),
     }),
-    drop({ ingredient }) {
-      dispatch(handleAdd(ingredient));
+    drop({ ingredient }, monitor) {
+      if (!monitor.didDrop()) {
+        dispatch(handleAdd(ingredient));
+      }
     },
   });
 
@@ -53,11 +63,17 @@ function BurgerConstructor() {
     return acc + price;
   }, 0);
 
+  const dropRef = (element: HTMLDivElement | null) => {
+    if (element) {
+      dropNew(element);
+    }
+  };
+
   return (
     <div
-      className={constructorStyles.constructor}
-      ref={dropNew}
-      style={{ isHover }}
+      className={constructorStyles.constructorWindow}
+      ref={dropRef}
+      style={{ backgroundColor: isHover ? "inherit" : "transparent" }}
     >
       <BunElement bun={bun} position="top" />
       <IngredientsList ingredients={otherIngredients} />
