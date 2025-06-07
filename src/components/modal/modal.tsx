@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import ReactDOM from "react-dom";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 
@@ -15,6 +15,19 @@ interface IModal {
 const modalRoot = document.getElementById("modals");
 
 const Modal = ({ onCloseButtonClick, headerText, type, children }: IModal) => {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onCloseButtonClick();
+      }
+    };
+
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [onCloseButtonClick]);
+
   if (!modalRoot) {
     return null;
   }

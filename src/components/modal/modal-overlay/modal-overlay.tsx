@@ -1,4 +1,4 @@
-import { useEffect, ReactNode, MouseEvent } from "react";
+import { ReactNode, MouseEvent } from "react";
 import modalOverlayStyles from "./modal-overlay.module.css";
 
 interface IModalOverlay {
@@ -12,19 +12,6 @@ const ModalOverlay = ({ children, onClose }: IModalOverlay) => {
       onClose();
     }
   };
-
-  useEffect(() => {
-    const handleEsc = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        onClose();
-      }
-    };
-
-    document.addEventListener("keydown", handleEsc);
-    return () => {
-      document.removeEventListener("keydown", handleEsc);
-    };
-  }, [onClose]);
 
   return (
     <div className={modalOverlayStyles.wrapper} onClick={handleOverlayClick}>
