@@ -5,9 +5,14 @@ import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { useForm } from "../hooks/useForm";
-import { ENDPOINTS } from "../utils/api";
+import { ENDPOINTS, request } from "../utils/api";
 import CustomInput from "../components/customInput";
 import { Button } from "@ya.praktikum/react-developer-burger-ui-components";
+
+interface ForgotPasswordResponse {
+  success: boolean;
+  message?: string;
+}
 
 export function ForgotPassword() {
   const navigate = useNavigate();
@@ -20,30 +25,25 @@ export function ForgotPassword() {
   const handleForgotSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch(ENDPOINTS.passwordReset, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      if (!response.ok) {
-        throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
-      }
-      const data = await response.json();
+      const data = await request<ForgotPasswordResponse>(
+        ENDPOINTS.passwordReset,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
       if (!data.success) {
-        throw new Error(data.message || "Ошибка при восстановлении пароля");
+        throw new Error(
+          data.message || "Не удалось отправить запрос на восстановление"
+        );
       }
       setError("");
       navigate("/reset-password", { state: { allowed: true } });
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else if (typeof err === "string") {
-        setError(err);
-      } else {
-        setError("Неизвестная ошибка");
-      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
     }
   };
 

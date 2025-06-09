@@ -1,113 +1,101 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { type User } from '../../utils/types';
-import { getCookie, setCookie, deleteCookie } from './cookie-utils';
-import { ENDPOINTS } from "../../utils/api";
+import { type User } from "../../utils/types";
+import { getCookie, setCookie, deleteCookie } from "./cookie-utils";
+import { request, ENDPOINTS } from "../../utils/api";
 
 interface UserResponce {
   success: boolean;
   accessToken: string;
   refreshToken: string;
   user: User;
-  message: string
+  message: string;
 }
 
-export const register = createAsyncThunk<User, { name: string; email: string; password: string }>(
-  'user/register',
-  async ({ name, email, password }, { rejectWithValue }) => {
-    try {
-      const response = await fetch(ENDPOINTS.auth.register, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ name: name, email: email, password: password }),
-      });
-      const data = (await response.json()) as UserResponce;
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Ошибка регистрации');
-      }
-
-      const user = data.user;
-      if (!user) {
-        return rejectWithValue('Ошибка получения данных пользователя');
-      }
-      if (data.accessToken && data.refreshToken) {
-        setCookie('accessToken', data.accessToken, null);
-        setCookie('refreshToken', data.refreshToken, null);
-      }
-
-      return user;
-    } catch (err) {
-      return rejectWithValue('Ошибка сети или сервера');
+export const register = createAsyncThunk<
+  User,
+  { name: string; email: string; password: string }
+>("user/register", async ({ name, email, password }, { rejectWithValue }) => {
+  try {
+    const data = await request<UserResponce>(ENDPOINTS.auth.register, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ name: name, email: email, password: password }),
+    });
+    const user = data.user;
+    if (!user) {
+      return rejectWithValue("Ошибка получения данных пользователя");
     }
-  }
-);
 
-export const login = createAsyncThunk<User, { email: string; password: string }, { rejectValue: string }>(
-  'user/login',
-  async ({ email, password }, { rejectWithValue }) => {
-    try {
-      const response = await fetch(ENDPOINTS.auth.login, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email: email, password: password }),
-      });
-      
-      const data = (await response.json()) as UserResponce;
-      console.log(data)
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Ошибка авторизации');
-      }
-
-      const user = data.user;
-      if (!user) {
-        return rejectWithValue('Ошибка получения данных пользователя');
-      }
-      if (data.accessToken && data.refreshToken) {
-        setCookie('accessToken', data.accessToken, null);
-        setCookie('refreshToken', data.refreshToken, null);
-      }
-
-      return user;
-    } catch (err) {
-      return rejectWithValue('Ошибка сети или сервера');
+    if (data.accessToken && data.refreshToken) {
+      setCookie("accessToken", data.accessToken, null);
+      setCookie("refreshToken", data.refreshToken, null);
     }
+
+    return user;
+  } catch (err: unknown) {
+    return rejectWithValue(
+      err instanceof Error ? err.message : "Ошибка сети или сервера"
+    );
   }
-);
+});
+
+export const login = createAsyncThunk<
+  User,
+  { email: string; password: string },
+  { rejectValue: string }
+>("user/login", async ({ email, password }, { rejectWithValue }) => {
+  try {
+    const data = await request<UserResponce>(ENDPOINTS.auth.login, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email: email, password: password }),
+    });
+
+    const user = data.user;
+    if (!user) {
+      return rejectWithValue("Ошибка получения данных пользователя");
+    }
+
+    if (data.accessToken && data.refreshToken) {
+      setCookie("accessToken", data.accessToken, null);
+      setCookie("refreshToken", data.refreshToken, null);
+    }
+
+    return user;
+  } catch (err: unknown) {
+    return rejectWithValue(
+      err instanceof Error ? err.message : "Ошибка сети или сервера"
+    );
+  }
+});
 
 export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
-  'user/logout',
+  "user/logout",
   async (_, { rejectWithValue }) => {
     try {
-      const refreshToken = getCookie('refreshToken')
+      const refreshToken = getCookie("refreshToken");
       if (!refreshToken) {
-        return rejectWithValue('Токен не найден');
+        return rejectWithValue("Токен не найден");
       }
-      const response = await fetch(ENDPOINTS.auth.logout, {
+      await request<UserResponce>(ENDPOINTS.auth.logout, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ token: refreshToken }),
       });
-      
-      const data = (await response.json()) as UserResponce;
-      
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Ошибка авторизации');
-      }
 
-      if (!data.success) {
-        return rejectWithValue(data.message);
-      }
-      deleteCookie('accessToken');
-      deleteCookie('refreshToken');
-      return;
-    } catch (err) {
-      return rejectWithValue('Ошибка сети или сервера');
+      deleteCookie("accessToken");
+      deleteCookie("refreshToken");
+    } catch (err: unknown) {
+      return rejectWithValue(
+        err instanceof Error ? err.message : "Ошибка сети или сервера"
+      );
     }
   }
 );
@@ -122,8 +110,7 @@ export const refreshToken = createAsyncThunk<
     if (!refreshTokenValue) {
       return rejectWithValue("Токен не найден");
     }
-    console.log('refreshTokenValue', refreshTokenValue)
-    const response = await fetch(ENDPOINTS.auth.token, {
+    const data = await request<UserResponce>(ENDPOINTS.auth.token, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -131,57 +118,44 @@ export const refreshToken = createAsyncThunk<
       body: JSON.stringify({ token: refreshTokenValue }),
     });
 
-    const data = (await response.json()) as UserResponce;
-
-    if (!response.ok) {
-      return rejectWithValue(data.message || "Ошибка обновления токена");
-    }
-
-    if (!data.success) {
-      return rejectWithValue(data.message);
-    }
-
     setCookie("accessToken", data.accessToken, null);
     setCookie("refreshToken", data.refreshToken, null);
 
     return { accessToken: data.accessToken, refreshToken: data.refreshToken };
-  } catch (err) {
-    return rejectWithValue("Ошибка сети или сервера");
+  } catch (err: unknown) {
+    return rejectWithValue(
+      err instanceof Error ? err.message : "Ошибка сети или сервера"
+    );
   }
 });
 
 export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
-  'user/get',
+  "user/get",
   async (_, { rejectWithValue }) => {
     try {
-      const accessToken = getCookie('accessToken')
-      console.log('Проверяем пользователя:', accessToken)
+      const accessToken = getCookie("accessToken");
       if (!accessToken) {
         return rejectWithValue("Токен не найден");
       }
 
-      const response = await fetch(ENDPOINTS.auth.user, {
+      const data = await request<UserResponce>(ENDPOINTS.auth.user, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: accessToken
+          Authorization: accessToken,
         },
       });
-      
-      const data = (await response.json()) as UserResponce;
-      
-      if (!response.ok) {
-        return rejectWithValue(data.message || 'Ошибка получения данных пользователя');
-      }
 
       const user = data.user;
       if (!user) {
-        return rejectWithValue('Ошибка получения данных пользователя');
+        return rejectWithValue("Ошибка получения данных пользователя");
       }
 
       return user;
-    } catch (err) {
-      return rejectWithValue('Ошибка сети или сервера');
+    } catch (err: unknown) {
+      return rejectWithValue(
+        err instanceof Error ? err.message : "Ошибка сети или сервера"
+      );
     }
   }
 );
@@ -192,37 +166,29 @@ export const updateUser = createAsyncThunk<
     email: string;
     name: string;
     password?: string;
-  } , { rejectValue: string }
->('user/update', async ({ email, name, password }, { rejectWithValue }) => {
+  },
+  { rejectValue: string }
+>("user/update", async ({ email, name, password }, { rejectWithValue }) => {
   try {
-    const accessToken = getCookie('accessToken')
+    const accessToken = getCookie("accessToken");
     if (!accessToken) {
       return rejectWithValue("Токен не найден");
     }
 
-    console.log( email, name, password )
     const body = password ? { email, name, password } : { email, name };
-    
-    const response = await fetch(ENDPOINTS.auth.user, {
+
+    const data = await request<UserResponce>(ENDPOINTS.auth.user, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: accessToken
+        Authorization: accessToken,
       },
       body: JSON.stringify(body),
     });
-    const data = (await response.json()) as UserResponce;
-    console.log(data)
-    if (!response.ok) {
-      return rejectWithValue(data.message || "Ошибка обновления данных пользователя");
-    }
-
-    if (!data.success) {
-      return rejectWithValue(data.message);
-    }
-
     return data.user;
-  } catch (err) {
-    return rejectWithValue("Ошибка сети или сервера");
+  } catch (err: unknown) {
+    return rejectWithValue(
+      err instanceof Error ? err.message : "Ошибка сети или сервера"
+    );
   }
 });

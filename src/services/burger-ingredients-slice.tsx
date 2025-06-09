@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
-import { Ingredient, BurgerIngredientsState } from "../utils/types"
-import { ENDPOINTS } from "../utils/api";
+import { Ingredient, BurgerIngredientsState } from "../utils/types";
+import { request, ENDPOINTS } from "../utils/api";
 
 interface IngredientsApiResponse {
   success: boolean;
@@ -15,27 +15,19 @@ const initialState: BurgerIngredientsState = {
 };
 
 export const fetchIngredients = createAsyncThunk<
-  Ingredient[], 
-  void,  
-  { rejectValue: string } 
->(
-  "burgerIngredients/fetchIngredients",
-  async (_, { rejectWithValue }) => {
-    try {
-      const response = await fetch(ENDPOINTS.ingredients);
-      if (!response.ok) {
-        throw new Error(`Ошибка ${response.status}: ${response.statusText}`);
-      }
-      const data: IngredientsApiResponse = await response.json();
-      if (!data.success) {
-        throw new Error("Данные с сервера не содержат success: true");
-      }
-      return data.data;
-    } catch (error: any) {
-      return rejectWithValue(error.message);
-    }
+  Ingredient[],
+  void,
+  { rejectValue: string }
+>("burgerIngredients/fetchIngredients", async (_, { rejectWithValue }) => {
+  try {
+    const data = await request<IngredientsApiResponse>(ENDPOINTS.ingredients);
+    return data.data;
+  } catch (err: unknown) {
+    return rejectWithValue(
+      err instanceof Error ? err.message : "Ошибка сети или сервера"
+    );
   }
-);
+});
 
 export const burgerIngredientsSlice = createSlice({
   name: "burgerIngredients",
@@ -46,11 +38,14 @@ export const burgerIngredientsSlice = createSlice({
       state.isLoading = true;
       state.hasError = false;
     });
-    builder.addCase(fetchIngredients.fulfilled, (state, action: PayloadAction<Ingredient[]>) => {
-      state.isLoading = false;
-      state.hasError = false;
-      state.data = action.payload;
-    });
+    builder.addCase(
+      fetchIngredients.fulfilled,
+      (state, action: PayloadAction<Ingredient[]>) => {
+        state.isLoading = false;
+        state.hasError = false;
+        state.data = action.payload;
+      }
+    );
     builder.addCase(fetchIngredients.rejected, (state, action) => {
       state.isLoading = false;
       state.hasError = true;
