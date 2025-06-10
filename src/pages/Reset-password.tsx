@@ -1,16 +1,21 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { useForm } from "../hooks/useForm";
-import { ENDPOINTS } from "../utils/api";
+import { ENDPOINTS, request } from "../utils/api";
+import CustomInput from "../components/customInput";
 import {
   Button,
   PasswordInput,
-  Input,
 } from "@ya.praktikum/react-developer-burger-ui-components";
+
+interface ResetPasswordResponse {
+  success: boolean;
+  message?: string;
+}
 
 export function ResetPassword() {
   const location = useLocation();
@@ -30,30 +35,25 @@ export function ResetPassword() {
     }
   }, [navigate, location.state]);
 
-  const handleResetSubmit = async (e) => {
+  const handleResetSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response = await fetch(ENDPOINTS.passwordResetConfirm, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-      console.log(response);
-      if (!response.ok) {
-        setError(`Ошибка ${response.status}: ${response.statusText}`);
-      }
-      const data = await response.json();
-
+      const data = await request<ResetPasswordResponse>(
+        ENDPOINTS.passwordResetConfirm,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(values),
+        }
+      );
       if (!data.success) {
-        setError(data.message || "Ошибка при сбросе пароля");
-        return;
+        throw new Error(data.message || "Не удалось сбросить пароль");
       }
       navigate("/login", { state: { allowed: false } });
-      return data;
-    } catch (err) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Неизвестная ошибка");
     }
   };
   return (
@@ -72,7 +72,7 @@ export function ResetPassword() {
               name={"password"}
               extraClass="mb-2"
             />
-            <Input
+            <CustomInput
               type={"text"}
               placeholder={"Введите код из письма"}
               onChange={handleChange}

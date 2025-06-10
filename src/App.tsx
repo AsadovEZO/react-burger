@@ -8,7 +8,7 @@ import {
   useParams,
 } from "react-router-dom";
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { fetchIngredients } from "./services/burger-ingredients-slice";
 
 import { Home } from "./pages/Home";
@@ -20,6 +20,7 @@ import { Profile } from "./pages/Profile";
 import { IngredientPage } from "./pages/Ingredient-page";
 import { NotFound404 } from "./pages/Not-found-404";
 import ProtectedRouteElement from "./services/protected-route";
+import { useAppDispatch, RootState } from "./services/store";
 import Modal from "./components/modal/modal";
 import IngredientDetails from "./components/ingredient-details/ingredient-details";
 import {
@@ -28,16 +29,18 @@ import {
 } from "./services/ingredient-details-slice";
 
 const ModalSwitch = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
   const background = location.state?.background;
   const selectedIngredient = useSelector(
-    (state) => state.ingredientDetails.selectedIngredient
+    (state: RootState) => state.ingredientDetails.selectedIngredient
   );
-  const data = useSelector((state) => state.burgerIngredients.data);
-  const isLoading = useSelector((state) => state.burgerIngredients.isLoading);
+  const data = useSelector((state: RootState) => state.burgerIngredients.data);
+  const isLoading = useSelector(
+    (state: RootState) => state.burgerIngredients.isLoading
+  );
 
   useEffect(() => {
     if (!isLoading && data.length > 0 && params.id) {
@@ -72,7 +75,6 @@ const ModalSwitch = () => {
       {renderBackground()}
       {params.id && background && selectedIngredient && (
         <Modal
-          show={true}
           onCloseButtonClick={closeModal}
           headerText="Детали ингредиента"
           type="ingredient"
@@ -85,7 +87,7 @@ const ModalSwitch = () => {
 };
 
 function App() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     dispatch(fetchIngredients());

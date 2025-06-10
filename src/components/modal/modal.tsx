@@ -1,12 +1,36 @@
+import { ReactNode, useEffect } from "react";
 import ReactDOM from "react-dom";
-import PropTypes from "prop-types";
-import modalStyles from "./modal.module.css";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
+
 import ModalOverlay from "./modal-overlay/modal-overlay";
+import modalStyles from "./modal.module.css";
+
+interface IModal {
+  onCloseButtonClick: () => void;
+  headerText?: string;
+  type: "order" | "ingredient";
+  children: ReactNode;
+}
 
 const modalRoot = document.getElementById("modals");
 
-const Modal = ({ onCloseButtonClick, headerText, type, children }) => {
+const Modal = ({ onCloseButtonClick, headerText, type, children }: IModal) => {
+  useEffect(() => {
+    const handleEsc = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onCloseButtonClick();
+      }
+    };
+
+    document.addEventListener("keydown", handleEsc);
+    return () => {
+      document.removeEventListener("keydown", handleEsc);
+    };
+  }, [onCloseButtonClick]);
+
+  if (!modalRoot) {
+    return null;
+  }
   return ReactDOM.createPortal(
     <ModalOverlay onClose={onCloseButtonClick}>
       <section
@@ -27,13 +51,6 @@ const Modal = ({ onCloseButtonClick, headerText, type, children }) => {
     </ModalOverlay>,
     modalRoot
   );
-};
-
-Modal.propTypes = {
-  onCloseButtonClick: PropTypes.func.isRequired,
-  headerText: PropTypes.string,
-  type: PropTypes.oneOf(["order", "ingredient"]).isRequired,
-  children: PropTypes.node.isRequired,
 };
 
 export default Modal;
