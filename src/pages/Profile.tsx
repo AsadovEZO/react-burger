@@ -1,17 +1,10 @@
-import {
-  useState,
-  useEffect,
-  FormEvent,
-  SyntheticEvent,
-  MouseEvent,
-} from "react";
+import { useEffect, FormEvent, SyntheticEvent } from "react";
 import { useSelector } from "react-redux";
-import { NavLink, useNavigate } from "react-router-dom";
 
 import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
-import { logout, updateUser } from "../services/user/thunks";
+import { updateUser } from "../services/user/thunks";
 import { useForm } from "../hooks/useForm";
 import { useAppDispatch, RootState } from "../services/store";
 import CustomInput from "../components/customInput";
@@ -20,14 +13,13 @@ import {
   EmailInput,
   PasswordInput,
 } from "@ya.praktikum/react-developer-burger-ui-components";
+import { ProfileMenu } from "../components/profile/profile-menu";
 
 export function Profile() {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
 
   const { user, isLoading } = useSelector((state: RootState) => state.user);
 
-  const [error, setError] = useState("");
   const { values, handleChange, setValues } = useForm({
     name: "",
     email: "",
@@ -43,22 +35,6 @@ export function Profile() {
       });
     }
   }, [user, setValues]);
-
-  const handleLogout = async (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    try {
-      await dispatch(logout()).unwrap();
-      navigate("/login");
-    } catch (err) {
-      if (typeof err === "string") {
-        setError(err);
-      } else if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Произошла ошибка при регистрации");
-      }
-    }
-  };
 
   const handleUpdateUser = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -79,64 +55,7 @@ export function Profile() {
         </div>
       ) : (
         <div className={AuthStyles.profilePage}>
-          <nav className={AuthStyles.profileNav}>
-            <div className={AuthStyles.profileNavItem}>
-              <NavLink
-                to="/profile"
-                end
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? AuthStyles.profileLinkActive
-                      : AuthStyles.profileLink
-                  } text text_type_main-medium`
-                }
-              >
-                Профиль
-              </NavLink>
-            </div>
-            <div className={AuthStyles.profileNavItem}>
-              <NavLink
-                to="/profile/orders"
-                className={({ isActive }) =>
-                  `${
-                    isActive
-                      ? AuthStyles.profileLinkActive
-                      : AuthStyles.profileLink
-                  } text text_type_main-medium`
-                }
-              >
-                История заказов
-              </NavLink>
-            </div>
-            <div className={AuthStyles.profileNavItem}>
-              <button
-                onClick={handleLogout}
-                className="text text_type_main-medium text_color_inactive"
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  padding: 0,
-                }}
-              >
-                Выход
-              </button>
-            </div>
-            {error && (
-              <p className="text text_type_main-default text_color_error">
-                {error}
-              </p>
-            )}
-            <p
-              className="text text_type_main-small text_color_inactive"
-              style={{
-                marginTop: "80px",
-              }}
-            >
-              В этом разделе вы можете изменить свои персональные данные
-            </p>
-          </nav>
+          <ProfileMenu description="В этом разделе вы можете изменить свои персональные данные" />
           <section className={AuthStyles.loginContainer}>
             <form className={AuthStyles.form} onSubmit={handleUpdateUser}>
               <CustomInput
@@ -146,7 +65,6 @@ export function Profile() {
                 value={values.name}
                 name={"name"}
                 error={false}
-                // ref={inputRef}
                 errorText={"Ошибка"}
                 size={"default"}
                 extraClass="ml-1"

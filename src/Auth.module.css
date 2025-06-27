@@ -40,22 +40,8 @@
   gap: 60px;
 }
 
-.profileNav {
-  width: 280px;
-}
-
-.profileNavItem {
-  height: 64px;
-  display: flex;
-  align-items: center;
-}
-
-.profileLink {
-  text-decoration: none;
-  color: #8585ad;
-}
-
-.profileLinkActive {
-  text-decoration: none;
-  color: #f2f2f3;
+.ordersContainer {
+  flex: 1;
+  max-width: 700px;
+  width: 100%;
 }

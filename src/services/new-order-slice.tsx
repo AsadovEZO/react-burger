@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 import { ENDPOINTS, request } from "../utils/api";
+import { getCookie } from "./user/cookie-utils";
 
 type OrderDetails = {
   number: number;
@@ -32,10 +33,12 @@ export const postOrder = createAsyncThunk<
   { rejectValue: string }
 >("orderDetails/postOrder", async (ingredients, { rejectWithValue }) => {
   try {
+    const accessToken = getCookie("accessToken");
     const data = await request<OrderData>(ENDPOINTS.orders, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify({ ingredients }),
     });
@@ -50,8 +53,8 @@ export const postOrder = createAsyncThunk<
   }
 });
 
-export const orderDetailsSlice = createSlice({
-  name: "orderDetails",
+export const newOrderSlice = createSlice({
+  name: "newOrder",
   initialState,
   reducers: {
     hideOrderModal: (state) => {
@@ -81,5 +84,5 @@ export const orderDetailsSlice = createSlice({
   },
 });
 
-export const { hideOrderModal } = orderDetailsSlice.actions;
-export default orderDetailsSlice.reducer;
+export const { hideOrderModal } = newOrderSlice.actions;
+export default newOrderSlice.reducer;

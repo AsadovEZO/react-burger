@@ -31,4 +31,31 @@ export type User = {
   password: string;
 };
 
+export type TOrder = {
+  ingredients: string[];
+  _id: string;
+  status: string;
+  number: number;
+  createdAt: string;
+  updatedAt: string;
+  name: string
+};
+
+export type WsResponse = {
+  success: boolean;
+  orders: TOrder[];
+  total: number; 
+  totalToday: number; 
+  message?: string; 
+}
+
+export type WsState = {
+  orders: TOrder[];
+  total: number;
+  totalToday: number;
+  wsConnected: boolean;
+  error: string | null;
+};
+
+
 export type TActiveTab = "bun" | "sauce" | "main"
