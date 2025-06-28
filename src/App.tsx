@@ -23,9 +23,10 @@ import {
   hideIngredient,
   showIngredient,
 } from "./services/ingredient-details-slice";
-import { hideOrder } from "./services/order-preview-slice";
+import { hideOrder, showOrder } from "./services/order-preview-slice";
 import OrderDetails from "./components/orders/order-details";
 import useAuthCheck from "./services/user/auth-check";
+import { getOrderByNumber } from "./utils/get-order-by-number";
 
 function App() {
   const location = useLocation();
@@ -66,6 +67,26 @@ function App() {
     dispatch(hideIngredient());
     navigate(-1);
   };
+
+  useEffect(() => {
+    const isOrderModal =
+      location.pathname.startsWith("/feed/") ||
+      location.pathname.startsWith("/profile/orders/");
+    const id = location.pathname.split("/").pop();
+
+    if (isOrderModal && id) {
+      const fetchOrder = async () => {
+        try {
+          const order = await getOrderByNumber(id);
+          dispatch(showOrder(order));
+        } catch (err) {
+          console.error("Ошибка загрузки заказа:", err);
+        }
+      };
+
+      fetchOrder();
+    }
+  }, [location.pathname, dispatch]);
 
   const closeOrderModal = () => {
     dispatch(hideOrder());
@@ -152,9 +173,9 @@ function App() {
           </Modal>
         )}
 
-      {(background ||
-        location.pathname.startsWith("/feed/") ||
-        location.pathname.startsWith("/profile/orders/")) &&
+      {background &&
+        (location.pathname.startsWith("/feed/") ||
+          location.pathname.startsWith("/profile/orders/")) &&
         selectedOrder && (
           <Modal
             onCloseButtonClick={closeOrderModal}
