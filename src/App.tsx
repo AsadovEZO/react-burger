@@ -174,8 +174,7 @@ function App() {
         )}
 
       {background &&
-        (location.pathname.startsWith("/feed/") ||
-          location.pathname.startsWith("/profile/orders/")) &&
+        location.pathname.startsWith("/feed/") &&
         selectedOrder && (
           <Modal
             onCloseButtonClick={closeOrderModal}
@@ -184,6 +183,19 @@ function App() {
           >
             <OrderDetails order={selectedOrder} />
           </Modal>
+        )}
+      {background &&
+        location.pathname.startsWith("/profile/orders/") &&
+        selectedOrder && (
+          <ProtectedRouteElement redirectTo="/login" isAuthRequired={true}>
+            <Modal
+              onCloseButtonClick={closeOrderModal}
+              headerText="Информация о заказе"
+              type="order"
+            >
+              <OrderDetails order={selectedOrder} />
+            </Modal>
+          </ProtectedRouteElement>
         )}
     </>
   );
