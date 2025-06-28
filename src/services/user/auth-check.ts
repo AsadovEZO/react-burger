@@ -31,6 +31,16 @@ useEffect(() => {
         }
       }
     }
+    else {
+      if (rToken) {
+        try {
+          await dispatch(refreshToken()).unwrap() 
+          await dispatch(getUser()).unwrap();
+        } catch (refreshErr) {
+          console.error("Не удалось обновить токен:", refreshErr);
+        }
+      } 
+    }
     setAuthChecked(true);
   };
   checkAuth();

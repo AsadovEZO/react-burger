@@ -8,13 +8,17 @@ interface IOrderList {
 }
 
 const OrderList = ({ orderList, showStatus = false }: IOrderList) => {
+  const sortedOrders = [...orderList].sort((a, b) => {
+    return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+  });
+
   return (
     <section className={feedStyles.scrollableContainer}>
-      {orderList.length === 0 ? (
+      {sortedOrders.length === 0 ? (
         <p className={feedStyles.noOrdersMessage}>Заказы отсутствуют</p>
       ) : (
         <ul>
-          {orderList.map((order) => (
+          {sortedOrders.map((order) => (
             <OrderCard order={order} key={order._id} showStatus={showStatus} />
           ))}
         </ul>
