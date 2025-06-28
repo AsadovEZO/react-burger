@@ -1,12 +1,11 @@
 import { useEffect, FormEvent, SyntheticEvent } from "react";
-import { useSelector } from "react-redux";
 
 import styles from "../App.module.css";
 import AuthStyles from "../Auth.module.css";
 import AppHeader from "../components/app-header/app-header";
 import { updateUser } from "../services/user/thunks";
 import { useForm } from "../hooks/useForm";
-import { useAppDispatch, RootState } from "../services/store";
+import { useAppDispatch, useAppSelector } from "../services/store";
 import CustomInput from "../components/customInput";
 import {
   Button,
@@ -18,7 +17,7 @@ import { ProfileMenu } from "../components/profile/profile-menu";
 export function Profile() {
   const dispatch = useAppDispatch();
 
-  const { user, isLoading } = useSelector((state: RootState) => state.user);
+  const { user, isLoading } = useAppSelector((state) => state.user);
 
   const { values, handleChange, setValues } = useForm({
     name: "",

@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { getUser, refreshToken } from "./thunks";
 import { getCookie } from "./cookie-utils";
-import { useAppDispatch, RootState } from "../store";
+import { useAppDispatch, useAppSelector } from "../store";
 
 export default function useAuthCheck() {
   const dispatch = useAppDispatch();
-  const { user } = useSelector((state: RootState) => state.user);
+  const { user } = useAppSelector((state) => state.user);
   const [authChecked, setAuthChecked] = useState(false);
 
 useEffect(() => {

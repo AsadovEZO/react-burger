@@ -1,8 +1,8 @@
 import { useRef } from "react";
-import { useDispatch } from "react-redux";
 import { useDrag, useDrop } from "react-dnd";
 
 import { Ingredient } from "../../utils/types";
+import { useAppDispatch } from "../../services/store";
 import {
   handleMove,
   handleRemove,
@@ -19,7 +19,7 @@ interface IIngredientElement {
 }
 
 function IngredientElement({ ingredient, newIndex }: IIngredientElement) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const ref = useRef(null);
 
   const [{ opacity }, drag] = useDrag({

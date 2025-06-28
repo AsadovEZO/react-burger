@@ -1,6 +1,5 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { fetchIngredients } from "./services/burger-ingredients-slice";
 
 import { Home } from "./pages/Home";
@@ -16,7 +15,7 @@ import { Orders } from "./pages/Orders";
 import OrderPage from "./pages/Order-page";
 
 import ProtectedRouteElement from "./services/protected-route";
-import { useAppDispatch, RootState } from "./services/store";
+import { useAppDispatch, RootState, useAppSelector } from "./services/store";
 
 import Modal from "./components/modal/modal";
 import IngredientDetails from "./components/ingredient-details/ingredient-details";
@@ -36,14 +35,14 @@ function App() {
 
   const background = location.state && location.state.background;
 
-  const selectedIngredient = useSelector(
+  const selectedIngredient = useAppSelector(
     (state: RootState) => state.ingredientDetails.selectedIngredient
   );
-  const selectedOrder = useSelector(
+  const selectedOrder = useAppSelector(
     (state: RootState) => state.orderPreview.selectedOrder
   );
 
-  const ingredients = useSelector(
+  const ingredients = useAppSelector(
     (state: RootState) => state.burgerIngredients.data
   );
 

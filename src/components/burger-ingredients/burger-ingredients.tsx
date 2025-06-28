@@ -1,18 +1,17 @@
 import { useRef, useMemo } from "react";
-import { useSelector } from "react-redux";
 
 import ingredientsStyles from "./burger-ingredients.module.css";
 import IngredientsMenu from "./ingredients-menu/ingredients-menu";
 import IngredientSection from "./ingredients-section";
 import useScrollSection from "../../hooks/use-scroll-section";
-import { RootState } from "../../services/store";
+import { useAppSelector } from "../../services/store";
 
 function BurgerIngredients() {
-  const selectedIngredients = useSelector(
-    (state: RootState) => state.burgerConstructor
+  const selectedIngredients = useAppSelector(
+    (state) => state.burgerConstructor
   );
 
-  const data = useSelector((state: RootState) => state.burgerIngredients.data);
+  const data = useAppSelector((state) => state.burgerIngredients.data);
   const { buns, sauces, mains } = useMemo(() => {
     const buns = data.filter((item) => item.type === "bun");
     const sauces = data.filter((item) => item.type === "sauce");

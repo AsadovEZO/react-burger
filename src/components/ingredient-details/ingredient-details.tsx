@@ -1,11 +1,10 @@
-import { useSelector } from "react-redux";
-import { RootState } from "../../services/store";
+import { useAppSelector } from "../../services/store";
 
 import styles from "./ingredient-details.module.css";
 
 const IngredientDetails = () => {
-  const ingredient = useSelector(
-    (state: RootState) => state.ingredientDetails.selectedIngredient
+  const ingredient = useAppSelector(
+    (state) => state.ingredientDetails.selectedIngredient
   );
 
   if (!ingredient) {

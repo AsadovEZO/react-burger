@@ -1,8 +1,6 @@
-import { useSelector } from "react-redux";
-
 import { TOrder, Ingredient } from "../../utils/types";
 import feedStyles from "./orders.module.css";
-import { RootState } from "../../services/store";
+import { useAppSelector } from "../../services/store";
 import {
   FormattedDate,
   CurrencyIcon,
@@ -15,7 +13,7 @@ interface IOrder {
 }
 
 function OrderDetails({ order }: IOrder) {
-  const data = useSelector((state: RootState) => state.burgerIngredients.data);
+  const data = useAppSelector((state) => state.burgerIngredients.data);
 
   const detailedIngredients: (Ingredient | null)[] = order.ingredients.map(
     (id) => data.find((item) => item._id === id) || null

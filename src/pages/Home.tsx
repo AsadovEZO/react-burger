@@ -1,22 +1,17 @@
 import { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
-import { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
 
 import styles from "../App.module.css";
 import AppHeader from "../components/app-header/app-header";
 import BurgerIngredients from "../components/burger-ingredients/burger-ingredients";
 import BurgerConstructor from "../components/burger-constructor/burger-constructor";
 import { fetchIngredients } from "../services/burger-ingredients-slice";
-import { RootState } from "../utils/types";
-
-
-type AppDispatch = ThunkDispatch<RootState, unknown, UnknownAction>;
+import { useAppDispatch, useAppSelector } from "../services/store";
 
 export function Home() {
-  const dispatch= useDispatch<AppDispatch>();
-  const hasError = useSelector((state: RootState) => state.burgerIngredients.hasError);
+  const dispatch = useAppDispatch();
+  const hasError = useAppSelector((state) => state.burgerIngredients.hasError);
 
   useEffect(() => {
     dispatch(fetchIngredients());

@@ -1,19 +1,21 @@
 import { useParams } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 
 import IngredientDetails from "../components/ingredient-details/ingredient-details";
 import styles from "../App.module.css";
 import AppHeader from "../components/app-header/app-header";
-import { Ingredient, RootState } from "../utils/types";
+import { Ingredient } from "../utils/types";
 import { showIngredient } from "../services/ingredient-details-slice";
+import { useAppDispatch, useAppSelector } from "../services/store";
 
 export function IngredientPage() {
   const { id } = useParams<{ id: string }>();
-  const dispatch = useDispatch();
-  const data = useSelector((state: RootState) => state.burgerIngredients.data);
-  const isLoading = useSelector((state: RootState) => state.burgerIngredients.isLoading);
-  const hasError = useSelector((state: RootState) => state.burgerIngredients.hasError);
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.burgerIngredients.data);
+  const isLoading = useAppSelector(
+    (state) => state.burgerIngredients.isLoading
+  );
+  const hasError = useAppSelector((state) => state.burgerIngredients.hasError);
 
   useEffect(() => {
     const ingredient = data.find((item: Ingredient) => item._id === id);

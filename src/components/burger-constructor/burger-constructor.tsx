@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { useDrop } from "react-dnd";
 import { useNavigate } from "react-router-dom";
 
@@ -10,24 +9,24 @@ import constructorStyles from "./burger-constructor.module.css";
 import OrderDetails from "../orders/new-order/new-order";
 import { postOrder, hideOrderModal } from "../../services/new-order-slice";
 import { handleAdd } from "../../services/burger-constructor-slice";
-import { useAppDispatch, RootState } from "../../services/store";
+import { useAppDispatch, useAppSelector } from "../../services/store";
 import { Ingredient } from "../../utils/types";
 import { calculateTotalPrice } from "../../utils/price-calculator";
 
 function BurgerConstructor() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.user);
-  const selectedIngredients = useSelector(
-    (state: RootState) => state.burgerConstructor
+  const user = useAppSelector((state) => state.user.user);
+  const selectedIngredients = useAppSelector(
+    (state) => state.burgerConstructor
   );
   const bun = selectedIngredients.find((item) => item.type === "bun");
   const otherIngredients = selectedIngredients.filter(
     (item) => item.type !== "bun"
   );
 
-  const isShowingOrderModal = useSelector(
-    (state: RootState) => state.newOrder.isShowingModal
+  const isShowingOrderModal = useAppSelector(
+    (state) => state.newOrder.isShowingModal
   );
 
   const handleOrderClick = () => {

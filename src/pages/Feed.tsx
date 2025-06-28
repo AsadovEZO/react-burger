@@ -1,22 +1,18 @@
 import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
 
 import styles from "../App.module.css";
 import AppHeader from "../components/app-header/app-header";
 import FeedList from "../components/orders/feed/feed-list";
-import { RootState } from "../services/store";
+import { useAppDispatch, useAppSelector } from "../services/store";
 import FeedStats from "../components/orders/feed/feed-stats";
 import { wsFeedClose, wsFeedInit } from "../services/websocket/slice";
 
-type AppDispatch = ThunkDispatch<RootState, unknown, UnknownAction>;
-
 export function Feed() {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const initialized = useRef(false);
 
-  const { orders, total, totalToday, error } = useSelector(
-    (state: RootState) => state.wsOrders.feed
+  const { orders, total, totalToday, error } = useAppSelector(
+    (state) => state.wsOrders.feed
   );
 
   useEffect(() => {

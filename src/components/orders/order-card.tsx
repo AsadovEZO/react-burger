@@ -1,10 +1,9 @@
-import { useDispatch } from "react-redux";
 import { useLocation, Link } from "react-router-dom";
 import { Ingredient, TOrder } from "../../utils/types";
-import { useSelector } from "react-redux";
-import { RootState } from "../../services/store";
+import { useAppSelector } from "../../services/store";
 
 import feedStyles from "./orders.module.css";
+import { useAppDispatch } from "../../services/store";
 import { calculateOrderPrice } from "../../utils/price-calculator";
 import { getOrderStatus } from "../../utils/order-status";
 import { getOrderDetailsPath } from "../../utils/order-details-path";
@@ -21,8 +20,8 @@ interface IOrder {
 
 const OrderCard = ({ order, showStatus = false }: IOrder) => {
   const { createdAt, ingredients, name, number } = order;
-  const dispatch = useDispatch();
-  const data = useSelector((state: RootState) => state.burgerIngredients.data);
+  const dispatch = useAppDispatch();
+  const data = useAppSelector((state) => state.burgerIngredients.data);
   const location = useLocation();
   const path = getOrderDetailsPath(location.pathname, order.number);
 

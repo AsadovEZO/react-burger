@@ -1,5 +1,4 @@
 import { useState, FormEvent } from "react";
-import { useSelector } from "react-redux";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import styles from "../App.module.css";
@@ -7,7 +6,7 @@ import AppHeader from "../components/app-header/app-header";
 import AuthStyles from "../Auth.module.css";
 import { login } from "../services/user/thunks";
 import { useForm } from "../hooks/useForm";
-import { useAppDispatch, RootState } from "../services/store";
+import { useAppDispatch, useAppSelector } from "../services/store";
 import {
   Button,
   EmailInput,
@@ -24,7 +23,7 @@ export function Login() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const userError = useSelector((state: RootState) => state.user.error);
+  const userError = useAppSelector((state) => state.user.error);
 
   const from = location.state?.from?.pathname || "/";
 

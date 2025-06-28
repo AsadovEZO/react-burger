@@ -1,9 +1,9 @@
 import { useRef } from "react";
-import { useDispatch } from "react-redux";
 import { useDrag } from "react-dnd";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import { Ingredient } from "../../../utils/types";
+import { useAppDispatch } from "../../../services/store";
 import styles from "./ingredients-item.module.css";
 import { showIngredient } from "../../../services/ingredient-details-slice";
 import {
@@ -18,7 +18,7 @@ interface IIngredientItem {
 
 const IngredientItem = ({ ingredient, count }: IIngredientItem) => {
   const { name, price, image, _id } = ingredient;
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
 

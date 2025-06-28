@@ -1,6 +1,4 @@
 import { useEffect, useRef, memo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { ThunkDispatch, UnknownAction } from "@reduxjs/toolkit";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import styles from "../App.module.css";
@@ -8,20 +6,18 @@ import AuthStyles from "../Auth.module.css";
 import { ProfileMenu } from "../components/profile/profile-menu";
 import OrderList from "../components/orders/order-list";
 import AppHeader from "../components/app-header/app-header";
-import { RootState } from "../services/store";
+import { useAppDispatch, useAppSelector } from "../services/store";
 import { wsProfileClose, wsProfileInit } from "../services/websocket/slice";
 import { getCookie } from "../services/user/cookie-utils";
 import { refreshToken } from "../services/user/thunks";
 
-type AppDispatch = ThunkDispatch<RootState, unknown, UnknownAction>;
-
 const OrdersComponent = () => {
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
   const isInitialized = useRef(false);
-  const { wsConnected, error } = useSelector(
-    (state: RootState) => state.wsOrders.profile
+  const { wsConnected, error } = useAppSelector(
+    (state) => state.wsOrders.profile
   );
-  const { orders } = useSelector((state: RootState) => state.wsOrders.profile);
+  const { orders } = useAppSelector((state) => state.wsOrders.profile);
   const navigate = useNavigate();
   const location = useLocation();
   const accessToken = getCookie("accessToken");
