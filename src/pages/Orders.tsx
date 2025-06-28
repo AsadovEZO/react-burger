@@ -63,7 +63,7 @@ const OrdersComponent = () => {
         isInitialized.current = false;
       }
     };
-  }, [dispatch, accessToken, error, navigate, location]);
+  }, [dispatch]);
 
   if (error && error !== "Invalid or missing token") {
     return <div>Ошибка: {error}</div>;
