@@ -13,26 +13,34 @@ export const burgerConstructorSlice = createSlice({
   name: "burgerConstructor",
   initialState,
   reducers: {
-    handleAdd: (state, action: PayloadAction<Ingredient>) => {
-      const ingredient = action.payload;
-      const uniqueId = `${ingredient._id}-${Date.now()}`;
-      const ingredientWithId = { ...ingredient, uniqueId };
-      if (ingredient.type === "bun") {
-        const currentBun = state.find((item) => item.type === "bun");
+    handleAdd: {
+      reducer: (state, action: PayloadAction<Ingredient>) => {
+        const ingredient = action.payload;
+        if (ingredient.type === "bun") {
+          const currentBun = state.find((item) => item.type === "bun");
 
-        if (currentBun && currentBun._id === ingredient._id) {
-          return;
+          if (currentBun && currentBun._id === ingredient._id) {
+            return;
+          }
+
+          if (currentBun) {
+            const filtered = state.filter((item) => item.type !== "bun");
+            return [ingredient, ...filtered];
+          }
+
+          return [ingredient, ...state];
+        } else {
+          state.push(ingredient);
         }
-
-        if (currentBun) {
-          const filtered = state.filter((item) => item.type !== "bun");
-          return [ingredientWithId, ...filtered];
-        }
-
-        return [ingredientWithId, ...state];
-      } else {
-        state.push(ingredientWithId);
-      }
+      },
+      prepare: (ingredient: Ingredient) => {
+        return {
+          payload: {
+            ...ingredient,
+            uniqueId: `${ingredient._id}-${Date.now()}`,
+          },
+        };
+      },
     },
     handleMove: (state, action: PayloadAction<MoveIngredientPayload>) => {
       const { ingredient, toIndex } = action.payload;
