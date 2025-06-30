@@ -12,6 +12,9 @@ interface UserResponce {
   message: string;
 }
 
+const accessTokenExpireTime = { expires: 20 * 60 };
+const refreshTokenExpireTime = { expires: 7 * 24 * 60 * 60 };
+
 export const register = createAsyncThunk<
   User,
   { name: string; email: string; password: string }
@@ -30,8 +33,8 @@ export const register = createAsyncThunk<
     }
 
     if (data.accessToken && data.refreshToken) {
-      setCookie("accessToken", data.accessToken, null);
-      setCookie("refreshToken", data.refreshToken, null);
+      setCookie("accessToken", data.accessToken, accessTokenExpireTime);
+      setCookie("refreshToken", data.refreshToken, refreshTokenExpireTime);
     }
 
     return user;
@@ -60,10 +63,12 @@ export const login = createAsyncThunk<
     if (!user) {
       return rejectWithValue("Ошибка получения данных пользователя");
     }
-
+    
     if (data.accessToken && data.refreshToken) {
-      setCookie("accessToken", data.accessToken, null);
-      setCookie("refreshToken", data.refreshToken, null);
+      deleteCookie("accessToken");
+      deleteCookie("refreshToken");
+      setCookie("accessToken", data.accessToken, accessTokenExpireTime);
+      setCookie("refreshToken", data.refreshToken, refreshTokenExpireTime);
     }
 
     return user;
@@ -117,9 +122,10 @@ export const refreshToken = createAsyncThunk<
       },
       body: JSON.stringify({ token: refreshTokenValue }),
     });
-
-    setCookie("accessToken", data.accessToken, null);
-    setCookie("refreshToken", data.refreshToken, null);
+    deleteCookie("accessToken");
+    deleteCookie("refreshToken");
+    setCookie("accessToken", data.accessToken, accessTokenExpireTime);
+    setCookie("refreshToken", data.refreshToken, refreshTokenExpireTime);
 
     return { accessToken: data.accessToken, refreshToken: data.refreshToken };
   } catch (err: unknown) {
@@ -142,7 +148,7 @@ export const getUser = createAsyncThunk<User, void, { rejectValue: string }>(
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          Authorization: accessToken,
+          Authorization: `Bearer ${accessToken}`,
         },
       });
 

@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { useDrop } from "react-dnd";
 import { useNavigate } from "react-router-dom";
 
@@ -7,26 +6,27 @@ import BunElement from "./bun-element";
 import IngredientsList from "./ingredients-list";
 import TotalSection from "./total-section";
 import constructorStyles from "./burger-constructor.module.css";
-import OrderDetails from "../order-details/order-details";
-import { postOrder, hideOrderModal } from "../../services/order-details-slice";
+import OrderDetails from "../orders/new-order/new-order";
+import { postOrder, hideOrderModal } from "../../services/new-order-slice";
 import { handleAdd } from "../../services/burger-constructor-slice";
-import { useAppDispatch, RootState } from "../../services/store";
+import { useAppDispatch, useAppSelector } from "../../services/store";
 import { Ingredient } from "../../utils/types";
+import { calculateTotalPrice } from "../../utils/price-calculator";
 
 function BurgerConstructor() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.user.user);
-  const selectedIngredients = useSelector(
-    (state: RootState) => state.burgerConstructor
+  const user = useAppSelector((state) => state.user.user);
+  const selectedIngredients = useAppSelector(
+    (state) => state.burgerConstructor
   );
   const bun = selectedIngredients.find((item) => item.type === "bun");
   const otherIngredients = selectedIngredients.filter(
     (item) => item.type !== "bun"
   );
 
-  const isShowingOrderModal = useSelector(
-    (state: RootState) => state.orderDetails.isShowingModal
+  const isShowingOrderModal = useAppSelector(
+    (state) => state.newOrder.isShowingModal
   );
 
   const handleOrderClick = () => {
@@ -54,14 +54,7 @@ function BurgerConstructor() {
     },
   });
 
-  const totalPrice = selectedIngredients.reduce((acc, item) => {
-    const price = item
-      ? item.type === "bun"
-        ? item.price * 2
-        : item.price
-      : 0;
-    return acc + price;
-  }, 0);
+  const totalPrice = calculateTotalPrice(selectedIngredients);
 
   const dropRef = (element: HTMLDivElement | null) => {
     if (element) {

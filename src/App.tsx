@@ -1,14 +1,5 @@
-import {
-  Route,
-  BrowserRouter as Router,
-  Routes,
-  Outlet,
-  useLocation,
-  useNavigate,
-  useParams,
-} from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
-import { useSelector } from "react-redux";
 import { fetchIngredients } from "./services/burger-ingredients-slice";
 
 import { Home } from "./pages/Home";
@@ -18,88 +9,99 @@ import { ForgotPassword } from "./pages/Forgot-password";
 import { ResetPassword } from "./pages/Reset-password";
 import { Profile } from "./pages/Profile";
 import { IngredientPage } from "./pages/Ingredient-page";
+import { Feed } from "./pages/Feed";
 import { NotFound404 } from "./pages/Not-found-404";
+import { Orders } from "./pages/Orders";
+import OrderPage from "./pages/Order-page";
+
 import ProtectedRouteElement from "./services/protected-route";
-import { useAppDispatch, RootState } from "./services/store";
+import { useAppDispatch, RootState, useAppSelector } from "./services/store";
+
 import Modal from "./components/modal/modal";
 import IngredientDetails from "./components/ingredient-details/ingredient-details";
 import {
   hideIngredient,
   showIngredient,
 } from "./services/ingredient-details-slice";
-
-const ModalSwitch = () => {
-  const dispatch = useAppDispatch();
-  const location = useLocation();
-  const navigate = useNavigate();
-  const params = useParams();
-  const background = location.state?.background;
-  const selectedIngredient = useSelector(
-    (state: RootState) => state.ingredientDetails.selectedIngredient
-  );
-  const data = useSelector((state: RootState) => state.burgerIngredients.data);
-  const isLoading = useSelector(
-    (state: RootState) => state.burgerIngredients.isLoading
-  );
-
-  useEffect(() => {
-    if (!isLoading && data.length > 0 && params.id) {
-      const ingredient = data.find((item) => item._id === params.id);
-      if (ingredient) {
-        dispatch(showIngredient(ingredient));
-      } else {
-        dispatch(hideIngredient());
-      }
-    } else if (!params.id) {
-      dispatch(hideIngredient());
-    }
-  }, [params.id, data, isLoading, dispatch]);
-
-  const closeModal = () => {
-    dispatch(hideIngredient());
-    navigate("/");
-  };
-
-  const renderBackground = () => {
-    if (background) {
-      return <Home />;
-    }
-    if (location.pathname.startsWith("/ingredients/")) {
-      return <Outlet />;
-    }
-    return <Home />;
-  };
-
-  return (
-    <>
-      {renderBackground()}
-      {params.id && background && selectedIngredient && (
-        <Modal
-          onCloseButtonClick={closeModal}
-          headerText="Детали ингредиента"
-          type="ingredient"
-        >
-          <IngredientDetails />
-        </Modal>
-      )}
-    </>
-  );
-};
+import { hideOrder, showOrder } from "./services/order-preview-slice";
+import OrderDetails from "./components/orders/order-details";
+import useAuthCheck from "./services/user/auth-check";
+import { getOrderByNumber } from "./utils/get-order-by-number";
 
 function App() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { isLoading } = useAuthCheck();
+
+  const background = location.state && location.state.background;
+
+  const selectedIngredient = useAppSelector(
+    (state: RootState) => state.ingredientDetails.selectedIngredient
+  );
+  const selectedOrder = useAppSelector(
+    (state: RootState) => state.orderPreview.selectedOrder
+  );
+
+  const ingredients = useAppSelector(
+    (state: RootState) => state.burgerIngredients.data
+  );
 
   useEffect(() => {
     dispatch(fetchIngredients());
   }, [dispatch]);
 
+  useEffect(() => {
+    const isIngredientModal = location.pathname.startsWith("/ingredients/");
+    const id = location.pathname.split("/").pop();
+
+    if (isIngredientModal && ingredients.length && id) {
+      const item = ingredients.find((i) => i._id === id);
+      if (item) {
+        dispatch(showIngredient(item));
+      }
+    }
+  }, [location.pathname, ingredients, dispatch]);
+
+  const closeIngredientModal = () => {
+    dispatch(hideIngredient());
+    navigate(-1);
+  };
+
+  useEffect(() => {
+    const isOrderModal =
+      location.pathname.startsWith("/feed/") ||
+      location.pathname.startsWith("/profile/orders/");
+    const id = location.pathname.split("/").pop();
+
+    if (isOrderModal && id) {
+      const fetchOrder = async () => {
+        try {
+          const order = await getOrderByNumber(id);
+          dispatch(showOrder(order));
+        } catch (err) {
+          console.error("Ошибка загрузки заказа:", err);
+        }
+      };
+
+      fetchOrder();
+    }
+  }, [location.pathname, dispatch]);
+
+  const closeOrderModal = () => {
+    dispatch(hideOrder());
+    navigate(-1);
+  };
+
+  if (isLoading) return <div>Проверка авторизации...</div>;
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<ModalSwitch />}>
-          <Route index element={<Home />} />
-          <Route path="ingredients/:id" element={<IngredientPage />} />
-        </Route>
+    <>
+      <Routes location={background || location}>
+        <Route path="/" element={<Home />} />
+        <Route path="/ingredients/:id" element={<IngredientPage />} />
+        <Route path="/feed" element={<Feed />} />
+        <Route path="/feed/:number" element={<OrderPage />} />
         <Route
           path="/login"
           element={
@@ -141,16 +143,61 @@ function App() {
           }
         />
         <Route
-          path="/profile/*"
+          path="/profile/orders"
           element={
             <ProtectedRouteElement redirectTo="/login" isAuthRequired={true}>
-              <Profile />
+              <Orders />
+            </ProtectedRouteElement>
+          }
+        />
+        <Route
+          path="/profile/orders/:number"
+          element={
+            <ProtectedRouteElement redirectTo="/login" isAuthRequired={true}>
+              <OrderPage />
             </ProtectedRouteElement>
           }
         />
         <Route path="*" element={<NotFound404 />} />
       </Routes>
-    </Router>
+
+      {background &&
+        location.pathname.startsWith("/ingredients/") &&
+        selectedIngredient && (
+          <Modal
+            onCloseButtonClick={closeIngredientModal}
+            headerText="Детали ингредиента"
+            type="ingredient"
+          >
+            <IngredientDetails />
+          </Modal>
+        )}
+
+      {background &&
+        location.pathname.startsWith("/feed/") &&
+        selectedOrder && (
+          <Modal
+            onCloseButtonClick={closeOrderModal}
+            headerText="Информация о заказе"
+            type="order"
+          >
+            <OrderDetails order={selectedOrder} />
+          </Modal>
+        )}
+      {background &&
+        location.pathname.startsWith("/profile/orders/") &&
+        selectedOrder && (
+          <ProtectedRouteElement redirectTo="/login" isAuthRequired={true}>
+            <Modal
+              onCloseButtonClick={closeOrderModal}
+              headerText="Информация о заказе"
+              type="order"
+            >
+              <OrderDetails order={selectedOrder} />
+            </Modal>
+          </ProtectedRouteElement>
+        )}
+    </>
   );
 }
 

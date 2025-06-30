@@ -13,7 +13,7 @@ function AppHeader() {
   const navigate = useNavigate();
 
   const isConstructorActive = location.pathname === "/";
-  const isOrdersActive = location.pathname === "/orders";
+  const isFeedActive = location.pathname.startsWith("/feed");
   const isProfileActive = location.pathname.startsWith("/profile");
 
   return (
@@ -34,11 +34,12 @@ function AppHeader() {
         </button>
         <button
           className={`${headerStyles.navItem} ${headerStyles.navButton} mr-2`}
+          onClick={() => navigate("/feed")}
         >
-          <ListIcon type={isOrdersActive ? "primary" : "secondary"} />
+          <ListIcon type={isFeedActive ? "primary" : "secondary"} />
           <span
             className={`text text_type_main-default pl-2 ${
-              !isOrdersActive && "text_color_inactive"
+              !isFeedActive && "text_color_inactive"
             }`}
           >
             Лента заказов
