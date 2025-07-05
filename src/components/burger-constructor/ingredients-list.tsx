@@ -17,7 +17,10 @@ function IngredientsList({ ingredients }: IIngredientsList) {
   }
 
   return (
-    <section className={styles.ingredientsList}>
+    <section
+      className={styles.ingredientsList}
+      data-test-id="constructor-ingredients"
+    >
       {ingredients.map((ingredient, index) => (
         <IngredientElement
           key={ingredient.uniqueId || `${ingredient._id}-${index}`}

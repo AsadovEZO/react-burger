@@ -1,10 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { Ingredient } from "../utils/types";
-
-type IngredientState = {
-  isShowingModal: boolean,
-  selectedIngredient: Ingredient | null;
-};
+import { Ingredient, IngredientState } from "../utils/types";
 
 const initialState: IngredientState = {
   isShowingModal: false,
@@ -28,5 +23,6 @@ export const ingredientDetailsSlice = createSlice({
   },
 });
 
-export const { showIngredient, hideIngredient } = ingredientDetailsSlice.actions;
+export const { showIngredient, hideIngredient } =
+  ingredientDetailsSlice.actions;
 export default ingredientDetailsSlice.reducer;
