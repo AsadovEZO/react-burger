@@ -67,6 +67,7 @@ function BurgerConstructor() {
       className={constructorStyles.constructorWindow}
       ref={dropRef}
       style={{ backgroundColor: isHover ? "inherit" : "transparent" }}
+      data-test-id="constructor-drop-zone"
     >
       <BunElement bun={bun} position="top" />
       <IngredientsList ingredients={otherIngredients} />

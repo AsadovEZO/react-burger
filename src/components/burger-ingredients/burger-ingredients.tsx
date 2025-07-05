@@ -41,7 +41,10 @@ function BurgerIngredients() {
   );
 
   return (
-    <div className={ingredientsStyles.mainBlock}>
+    <div
+      className={ingredientsStyles.mainBlock}
+      data-test-id="ingredients-list"
+    >
       <section className={ingredientsStyles.header}>
         <article className="text text_type_main-large">Соберите бургер</article>
       </section>

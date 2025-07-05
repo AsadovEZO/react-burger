@@ -50,7 +50,7 @@ export const burgerIngredientsSlice = createSlice({
       state.isLoading = false;
       state.hasError = true;
       state.data = [];
-      console.error("Ошибка при загрузке данных:", action.payload);
+      // console.error("Ошибка при загрузке данных:", action.payload);
     });
   },
 });

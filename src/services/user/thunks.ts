@@ -63,7 +63,7 @@ export const login = createAsyncThunk<
     if (!user) {
       return rejectWithValue("Ошибка получения данных пользователя");
     }
-    
+
     if (data.accessToken && data.refreshToken) {
       deleteCookie("accessToken");
       deleteCookie("refreshToken");
@@ -180,14 +180,14 @@ export const updateUser = createAsyncThunk<
     if (!accessToken) {
       return rejectWithValue("Токен не найден");
     }
-
+    console.log(accessToken);
     const body = password ? { email, name, password } : { email, name };
 
     const data = await request<UserResponce>(ENDPOINTS.auth.user, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        Authorization: accessToken,
+        Authorization: `Bearer ${accessToken}`,
       },
       body: JSON.stringify(body),
     });
