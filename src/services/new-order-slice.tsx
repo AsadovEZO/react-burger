@@ -2,23 +2,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 
 import { ENDPOINTS, request } from "../utils/api";
 import { getCookie } from "./user/cookie-utils";
-
-type OrderDetails = {
-  number: number;
-};
-
-type OrderData = {
-  name: string;
-  order: OrderDetails;
-  success: boolean;
-};
-
-type OrderState = {
-  isShowingModal: boolean;
-  data: OrderData | null;
-  isLoading: boolean;
-  hasError: boolean;
-};
+import { OrderData, OrderState } from "../utils/types";
 
 const initialState: OrderState = {
   isShowingModal: false,
@@ -79,7 +63,7 @@ export const newOrderSlice = createSlice({
       state.isLoading = false;
       state.hasError = true;
       state.data = null;
-      console.error("Ошибка при загрузке данных:", action.payload);
+      // console.error("Ошибка при загрузке данных:", action.payload);
     });
   },
 });

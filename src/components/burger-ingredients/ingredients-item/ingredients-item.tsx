@@ -40,7 +40,12 @@ const IngredientItem = ({ ingredient, count }: IIngredientItem) => {
   dragRef(ref);
 
   return (
-    <div className={styles.card} style={{ opacity }} ref={ref}>
+    <div
+      className={styles.card}
+      style={{ opacity }}
+      ref={ref}
+      data-test-id="ingredient-item"
+    >
       <button className={styles.addButton} onClick={handleClick}>
         {count > 0 && (
           <div className={styles.counter}>

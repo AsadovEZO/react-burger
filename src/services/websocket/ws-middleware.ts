@@ -36,61 +36,82 @@ export const createSocketMiddleware = (
       const { dispatch } = store;
       const accessToken = getCookie("accessToken");
       // console.log(`Получено действие для ${wsType}:`, action.type, "Токен:", accessToken?.length);
-      
 
       if (action.type === actions.wsInit) {
         console.log(`Начало инициализации WebSocket для ${wsType}`);
         if (!socket || socket.readyState === WebSocket.CLOSED) {
           if (withToken && !accessToken) {
             console.error(`Ошибка: Токен для ${wsType} отсутствует`);
-            dispatch({ type: actions.onError, payload: "Отсутствует токен авторизации" });
+            dispatch({
+              type: actions.onError,
+              payload: "Отсутствует токен авторизации",
+            });
             return next(action);
           }
           const token = accessToken || "";
-          console.log(token)
+          // console.log(token)
           const url = withToken && token ? `${wsUrl}?token=${token}` : wsUrl;
-          console.log(`🧩 Создание WebSocket для ${wsType}:`, url);
+          // console.log(`🧩 Создание WebSocket для ${wsType}:`, url);
           socket = new WebSocket(url);
           isManuallyClosed = false;
 
           socket.onopen = () => {
-            console.log(`✅ WebSocket для ${wsType} открыт`);
+            // console.log(`✅ WebSocket для ${wsType} открыт`);
             dispatch({ type: actions.onOpen });
           };
 
           socket.onerror = (event) => {
-            console.log(`❌ WebSocket ошибка для ${wsType}:`, event);
+            // console.log(`❌ WebSocket ошибка для ${wsType}:`, event);
             if (!isManuallyClosed) {
-              dispatch({ type: actions.onError, payload: "Ошибка соединения с WebSocket" });
+              dispatch({
+                type: actions.onError,
+                payload: "Ошибка соединения с WebSocket",
+              });
             }
           };
 
           socket.onmessage = (event) => {
             try {
               const data: WsResponse = JSON.parse(event.data);
-              console.log(`Получено сообщение для ${wsType}:`, data);
+              // console.log(`Получено сообщение для ${wsType}:`, data);
               if (data.success && Array.isArray(data.orders)) {
-                const validOrders = data.orders.filter(order =>
-                  typeof order.number === "number" &&
-                  Array.isArray(order.ingredients) &&
-                  order.ingredients.every(id => typeof id === "string") &&
-                  ["created", "pending", "done", "canceled", "cancelled"].includes(order.status) &&
-                  typeof order.name === "string" &&
-                  typeof order.createdAt === "string" &&
-                  typeof order.updatedAt === "string"
+                const validOrders = data.orders.filter(
+                  (order) =>
+                    typeof order.number === "number" &&
+                    Array.isArray(order.ingredients) &&
+                    order.ingredients.every((id) => typeof id === "string") &&
+                    [
+                      "created",
+                      "pending",
+                      "done",
+                      "canceled",
+                      "cancelled",
+                    ].includes(order.status) &&
+                    typeof order.name === "string" &&
+                    typeof order.createdAt === "string" &&
+                    typeof order.updatedAt === "string"
                 );
-                dispatch({ type: actions.onMessage, payload: { ...data, orders: validOrders } });
+                dispatch({
+                  type: actions.onMessage,
+                  payload: { ...data, orders: validOrders },
+                });
               } else {
-                dispatch({ type: actions.onError, payload: data.message || "Ошибка в сообщении" });
+                dispatch({
+                  type: actions.onError,
+                  payload: data.message || "Ошибка в сообщении",
+                });
               }
             } catch (e) {
-              console.error(`Ошибка парсинга для ${wsType}:`, e);
-              dispatch({ type: actions.onError, payload: "Ошибка обработки данных от WebSocket" });
+              // console.error(`Ошибка парсинга для ${wsType}:`, e);
+              dispatch({
+                type: actions.onError,
+                payload: "Ошибка обработки данных от WebSocket",
+              });
             }
           };
 
           socket.onclose = (event) => {
-            console.log(`📴 WebSocket для ${wsType} закрыт, код:`, event.code, "причина:", event.reason);
+            // console.log(`📴 WebSocket для ${wsType} закрыт, код:`, event.code, "причина:", event.reason);
             socket = null;
             dispatch({ type: actions.onClose });
           };
@@ -98,14 +119,14 @@ export const createSocketMiddleware = (
       }
 
       if (action.type === actions.onClose) {
-        console.log(`🔌 Закрытие WebSocket для ${wsType} вручную`);
+        // console.log(`🔌 Закрытие WebSocket для ${wsType} вручную`);
         if (socket && socket.readyState === WebSocket.CONNECTING) {
           isManuallyClosed = true;
         } else if (socket && socket.readyState === WebSocket.OPEN) {
           isManuallyClosed = true;
           socket.close();
         } else {
-          console.warn(`⚠️ Сокет для ${wsType} уже закрыт или не инициализирован`);
+          // console.warn(`⚠️ Сокет для ${wsType} уже закрыт или не инициализирован`);
         }
       }
 

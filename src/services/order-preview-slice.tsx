@@ -1,10 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { TOrder } from "../utils/types";
-
-type OrderPreviewState = {
-  isShowingModal: boolean;
-  selectedOrder: TOrder | null;
-};
+import { OrderPreviewState, TOrder } from "../utils/types";
 
 const initialState: OrderPreviewState = {
   isShowingModal: false,

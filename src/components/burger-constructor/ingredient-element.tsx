@@ -56,7 +56,12 @@ function IngredientElement({ ingredient, newIndex }: IIngredientElement) {
   }
 
   return (
-    <div className={styles.ingredientItem} style={{ opacity }} ref={ref}>
+    <div
+      className={styles.ingredientItem}
+      style={{ opacity }}
+      ref={ref}
+      data-test-id="ingredient-element"
+    >
       <DragIcon type="primary" />
       <ConstructorElement
         text={ingredient.name}

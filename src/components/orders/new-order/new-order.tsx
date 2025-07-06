@@ -6,7 +6,10 @@ const OrderDetails = () => {
   const orderDetails = useAppSelector((state) => state.newOrder.data);
   return (
     <div className={styles.container}>
-      <h2 className={`${styles.orderNumber} text text_type_digits-large`}>
+      <h2
+        className={`${styles.orderNumber} text text_type_digits-large`}
+        data-test-id="order-number"
+      >
         {orderDetails?.order?.number}
       </h2>
       <p className={`${styles.orderId} text text_type_main-medium`}>

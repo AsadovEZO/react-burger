@@ -20,7 +20,7 @@ function BunElement({ bun, position }: IBunElement) {
   const label = position === "top" ? "(верх)" : "(низ)";
 
   return (
-    <section className={styles.bun}>
+    <section className={styles.bun} data-test-id="constructor-bun">
       <ConstructorElement
         type={type}
         isLocked

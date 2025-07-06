@@ -35,10 +35,12 @@ const Modal = ({ onCloseButtonClick, headerText, type, children }: IModal) => {
     <ModalOverlay onClose={onCloseButtonClick}>
       <section
         className={`${modalStyles.modal} ${modalStyles[`modal--${type}`]}`}
+        data-test-id="modal"
       >
         <button
           className={modalStyles.closeButton}
           onClick={onCloseButtonClick}
+          data-test-id="modal-close"
         >
           <CloseIcon type="primary" />
         </button>

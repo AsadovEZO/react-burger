@@ -1,3 +1,7 @@
+# HTTP/HTTPS address
+
+The project is located at http://stellarburgers.aez.nomorepartiessbs.ru/ or https://stellarburgers.aez.nomorepartiessbs.ru/
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

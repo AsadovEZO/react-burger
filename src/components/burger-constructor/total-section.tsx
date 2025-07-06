@@ -16,7 +16,13 @@ function TotalSection({ totalPrice, onOrder }: IIngredientElement) {
         <span className="text text_type_digits-medium">{totalPrice}</span>
         <CurrencyIcon type="primary" />
       </section>
-      <Button htmlType="button" type="primary" size="medium" onClick={onOrder}>
+      <Button
+        htmlType="button"
+        type="primary"
+        size="medium"
+        onClick={onOrder}
+        data-test-id="order-button"
+      >
         Оформить заказ
       </Button>
     </section>
