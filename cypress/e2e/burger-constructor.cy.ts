@@ -2,9 +2,25 @@
 
 import { mockIngredients, mockOrderData } from "../../src/tests/mocks";
 
+import {
+  SELECTOR_INGREDIENT_ITEM,
+  SELECTOR_CONSTRUCTOR_INGREDIENTS,
+  SELECTOR_CONSTRUCTOR_BUN,
+  SELECTOR_MODAL,
+  SELECTOR_MODAL_CLOSE,
+  SELECTOR_ORDER_BUTTON,
+  SELECTOR_ORDER_NUMBER,
+  SELECTOR_INGREDIENTS_LIST,
+  SELECTOR_DELETE_ACTION,
+  INGREDIENT_BUN,
+  INGREDIENT_FIRST,
+  INGREDIENT_SECOND,
+  DRAG_DROP_OPTIONS,
+  DEFAULT_TIMEOUT,
+} from "../constants";
+
 describe("Burger Constructor Functionality", () => {
   beforeEach(() => {
-    // Моки
     cy.intercept("GET", "*/ingredients", {
       statusCode: 200,
       body: {
@@ -39,148 +55,101 @@ describe("Burger Constructor Functionality", () => {
     cy.setCookie("refreshToken", "mock-refresh-token");
 
     cy.visit("/");
+    cy.get(SELECTOR_INGREDIENTS_LIST).should("be.visible");
     cy.wait(["@getIngredients", "@getUser"]);
   });
 
-  it("should allow building a burger, managing ingredients, and verify ingredient actions", () => {
-    // 1. Проверка отображения ингредиентов
-    cy.get(
-      "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]"
-    ).should("have.length", 0);
-    cy.get("[data-test-id=ingredients-list]").should("be.visible");
+  beforeEach(() => {
+    cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS).should("have.length", 0);
+  });
 
-    // 2. Перетаскивание булки
-    const $bun = cy
-      .get("[data-test-id=ingredient-item]")
-      .contains("Флюоресцентная булка R2-D3");
-    $bun.trigger("dragstart", { force: true });
+  it("should load ingredients list correctly", () => {
+    cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS).should("have.length", 0);
+    cy.get(SELECTOR_INGREDIENTS_LIST).should("be.visible");
+  });
 
-    cy.get("[data-test-id=constructor-drop-zone]")
-      .trigger("dragover", { force: true })
-      .trigger("drop", { force: true })
-      .then(() => {
-        cy.log("Bun drop completed, checking bun");
-      });
+  it("should open and close ingredient modal", () => {
+    cy.get(SELECTOR_INGREDIENT_ITEM).contains(INGREDIENT_FIRST).click();
+    cy.get(SELECTOR_MODAL, DEFAULT_TIMEOUT).should("be.visible");
+    cy.get(SELECTOR_MODAL).within(() => {
+      cy.contains(INGREDIENT_FIRST).should("be.visible");
+    });
+    cy.get(SELECTOR_MODAL_CLOSE).click();
+    cy.get(SELECTOR_MODAL).should("not.exist");
+  });
 
-    $bun.trigger("dragend", { force: true });
+  it("should allow dragging ingredients into constructor", () => {
+    cy.dragIngredientToConstructor(INGREDIENT_BUN);
+    cy.get(SELECTOR_CONSTRUCTOR_BUN, DEFAULT_TIMEOUT).should("be.visible");
 
-    cy.get("[data-test-id=constructor-bun]", { timeout: 10000 }).should(
-      "be.visible"
+    cy.dragIngredientToConstructor(INGREDIENT_FIRST);
+    cy.dragIngredientToConstructor(INGREDIENT_SECOND);
+    cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS, DEFAULT_TIMEOUT).should(
+      "have.length",
+      2
     );
+  });
 
-    // 3. Перетаскивание первой начинки
-    const $firstIngredient = cy
-      .get("[data-test-id=ingredient-item]")
-      .contains("Биокотлета из марсианской Магнолии");
-    $firstIngredient.trigger("dragstart", { force: true });
+  it("should allow reordering ingredients", () => {
+    cy.dragIngredientToConstructor(INGREDIENT_BUN);
+    cy.dragIngredientToConstructor(INGREDIENT_FIRST);
+    cy.dragIngredientToConstructor(INGREDIENT_SECOND);
 
-    cy.get("[data-test-id=constructor-drop-zone]")
-      .trigger("dragover", { force: true })
-      .trigger("drop", { force: true })
-      .then(() => {
-        cy.log("First ingredient drop completed, checking ingredients");
-      });
-
-    $firstIngredient.trigger("dragend", { force: true });
-
-    // 4. Перетаскивание второй начинки
-    const $secondIngredient = cy
-      .get("[data-test-id=ingredient-item]")
-      .contains("Соус фирменный Space Sauce");
-    $secondIngredient.trigger("dragstart", { force: true });
-
-    cy.get("[data-test-id=constructor-drop-zone]")
-      .trigger("dragover", { force: true })
-      .trigger("drop", { force: true })
-      .then(() => {
-        cy.log("Second ingredient drop completed, checking ingredients");
-      });
-
-    $secondIngredient.trigger("dragend", { force: true });
-
-    // 5. Проверка наличия двух ингредиентов
-    cy.get(
-      "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]",
-      {
-        timeout: 10000,
-      }
-    ).should("have.length", 2);
-
-    // 6. Перемещение второго ингредиента на первое место
-    cy.get(
-      "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]"
-    )
+    cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS)
       .eq(1)
       .invoke("text")
       .then((secondText) => {
         cy.log("Second ingredient text:", secondText);
 
-        cy.get(
-          "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]"
-        )
+        cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS)
           .eq(1)
-          .trigger("dragstart", { force: true })
+          .trigger("dragstart", DRAG_DROP_OPTIONS)
           .then(($secondElement) => {
-            cy.get(
-              "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]"
-            )
+            cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS)
               .eq(0)
-              .trigger("dragover", { force: true })
-              .trigger("drop", { force: true })
+              .trigger("dragover", DRAG_DROP_OPTIONS)
+              .trigger("drop", DRAG_DROP_OPTIONS)
               .then(() => {
-                cy.wrap($secondElement).trigger("dragend", { force: true });
+                cy.wrap($secondElement).trigger("dragend", DRAG_DROP_OPTIONS);
               });
           });
 
-        cy.get(
-          "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]"
-        )
+        cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS)
           .eq(0)
           .should("contain", secondText);
       });
+  });
 
-    // 7. Удаление ингредиента
-    cy.get(
-      "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]"
-    )
+  it("should allow removing an ingredient", () => {
+    cy.dragIngredientToConstructor(INGREDIENT_BUN);
+    cy.dragIngredientToConstructor(INGREDIENT_FIRST);
+    cy.dragIngredientToConstructor(INGREDIENT_SECOND);
+
+    cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS)
       .first()
-      .find(".constructor-element__action")
+      .find(SELECTOR_DELETE_ACTION)
       .should("be.visible")
       .click()
       .then(() => {
-        cy.wait(500);
+        cy.get(SELECTOR_CONSTRUCTOR_INGREDIENTS).should("have.length", 1);
         cy.log("Ingredient removal completed, checking length");
       });
+  });
 
-    // 8. Проверка, что остался один ингредиент
-    cy.get(
-      "[data-test-id=constructor-ingredients] > [data-test-id=ingredient-element]",
-      { timeout: 10000 }
-    ).should("have.length", 1);
+  it("should create an order successfully", () => {
+    cy.dragIngredientToConstructor(INGREDIENT_BUN);
+    cy.dragIngredientToConstructor(INGREDIENT_FIRST);
 
-    // 9. Открытие и закрытие модального окна с описанием ингредиента
-    cy.get("[data-test-id=ingredient-item]")
-      .contains("Биокотлета из марсианской Магнолии")
-      .click();
-    cy.get("[data-test-id=modal]", { timeout: 10000 }).should("be.visible");
-    cy.get("[data-test-id=modal]").within(() => {
-      cy.contains("Биокотлета из марсианской Магнолии").should("be.visible");
-    });
-    cy.get("[data-test-id=modal-close]").click();
-    cy.get("[data-test-id=modal]").should("not.exist");
-
-    // 10. Создание заказа
-    cy.get("[data-test-id=order-button]").click();
+    cy.get(SELECTOR_ORDER_BUTTON).click();
     cy.wait("@postOrder").then(() => {
-      cy.get("[data-test-id=modal]").should("be.visible");
-      cy.get("[data-test-id=order-number]").should(
+      cy.get(SELECTOR_MODAL).should("be.visible");
+      cy.get(SELECTOR_ORDER_NUMBER).should(
         "contain",
         mockOrderData.order.number
       );
     });
 
-    // 11. Закрытие модального окна заказа
-    cy.get("[data-test-id=modal-close]").click();
-    cy.get("[data-test-id=modal]").should("not.exist");
+    cy.get(SELECTOR_MODAL_CLOSE).click();
+    cy.get(SELECTOR_MODAL).should("not.exist");
   });
 });
